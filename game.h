@@ -1,7 +1,9 @@
-#ifndef GAME_H
+﻿#ifndef GAME_H
 #define GAME_H
 
 #include <QWidget>
+#include <QVector>
+#include "skystar.h"
 
 namespace Ui {
   class Game;
@@ -13,6 +15,8 @@ class Game : public QWidget
 
 public:
   explicit Game(QWidget *parent = nullptr);
+  void paintEvent(QPaintEvent *event);
+  QVector<SkyStar*> sky;
   ~Game();
 
 private:

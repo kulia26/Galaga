@@ -26,10 +26,12 @@ CONFIG += c++11
 
 SOURCES += \
         main.cpp \
-        game.cpp
+        game.cpp \
+    skystar.cpp
 
 HEADERS += \
-        game.h
+        game.h \
+    skystar.h
 
 FORMS += \
         game.ui

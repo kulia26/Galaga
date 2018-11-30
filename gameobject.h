@@ -1,17 +1,22 @@
-#ifndef GAMEOBJECT_H
+﻿#ifndef GAMEOBJECT_H
 #define GAMEOBJECT_H
 
 #include <QObject>
+#include <QRect>
+#include <QPixmap>
 
-class GameObject : public QObject
+class GameObject
 {
-  Q_OBJECT
 public:
-  explicit GameObject(QObject *parent = nullptr);
-
-signals:
-
-public slots:
+  enum Direction { left, right, top, bottom, none };
+  explicit GameObject();
+  virtual ~GameObject();
+  QRect getRect();
+  QPixmap getPixmap();
+  virtual void move(Direction direction);
+protected:
+  QRect rect;
+  QPixmap pixmap;
 };
 
 #endif // GAMEOBJECT_H

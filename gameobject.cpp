@@ -1,6 +1,25 @@
-#include "gameobject.h"
+﻿#include "gameobject.h"
 
-GameObject::GameObject(QObject *parent) : QObject(parent)
+GameObject::GameObject()
+{
+
+}
+
+GameObject::~GameObject()
+{
+
+}
+QRect GameObject::getRect()
+{
+  return rect;
+}
+
+QPixmap GameObject::getPixmap()
+{
+  return pixmap;
+}
+
+void GameObject::move(Direction direction)
 {
 
 }

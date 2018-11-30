@@ -2,14 +2,15 @@
 #define SKYSTAR_H
 
 #include <QWidget>
+#include "gameobject.h"
 
-class SkyStar
+class SkyStar : public GameObject
 {
 public:
   QColor color;
-  QRect star;
   int shows;
   SkyStar();
+  void move(Direction direction) override;
 };
 
 #endif // SKYSTAR_H

@@ -1,11 +1,12 @@
-#ifndef SHOT_H
+﻿#ifndef SHOT_H
 #define SHOT_H
+#include "gameobject.h"
 
-
-class shot : public GameObject
+class Shot : public GameObject
 {
 public:
-  shot();
+  Shot(QRect rect);
+  void move(Direction direction) override;
 };
 
 #endif // SHOT_H

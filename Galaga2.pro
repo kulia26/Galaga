@@ -27,11 +27,17 @@ CONFIG += c++11
 SOURCES += \
         main.cpp \
         game.cpp \
-    skystar.cpp
+    skystar.cpp \
+    player.cpp \
+    gameobject.cpp \
+    shot.cpp
 
 HEADERS += \
         game.h \
-    skystar.h
+    skystar.h \
+    player.h \
+    gameobject.h \
+    shot.h
 
 FORMS += \
         game.ui
@@ -40,3 +46,6 @@ FORMS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+RESOURCES += \
+    game.qrc

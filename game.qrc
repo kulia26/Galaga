@@ -1,2 +1,20 @@
-<!DOCTYPE RCC>
-<RCC version="1.0"/>
+<RCC>
+    <qresource prefix="/images">
+        <file>images/YellowFire.gif</file>
+        <file>images/WhiteFire.gif</file>
+        <file>images/RedFire.gif</file>
+        <file>images/PurpleFire.gif</file>
+        <file>images/GalaxianRedAlien3.gif</file>
+        <file>images/GalaxianRedAlien2.gif</file>
+        <file>images/GalaxianRedAlien.gif</file>
+        <file>images/GalaxianPurpleAlien3.gif</file>
+        <file>images/GalaxianPurpleAlien2.gif</file>
+        <file>images/GalaxianPurpleAlien.gif</file>
+        <file>images/GalaxianGalaxip.gif</file>
+        <file>images/GalaxianFlagship.gif</file>
+        <file>images/GalaxianAquaAlien3.gif</file>
+        <file>images/GalaxianAquaAlien2.gif</file>
+        <file>images/GalaxianAquaAlien.gif</file>
+        <file>images/sprites.png</file>
+    </qresource>
+</RCC>

@@ -1,18 +1,23 @@
-#ifndef PLAYER_H
+﻿#ifndef PLAYER_H
 #define PLAYER_H
 
 #include <QObject>
 #include <QWidget>
+#include "gameobject.h"
+#include "shot.h"
 
-class player : public QWidget
+class Player : public GameObject
 {
-  Q_OBJECT
 public:
-  explicit player(QWidget *parent = nullptr);
+  explicit Player();
+  QPixmap getPixmap();
+  void move(Direction direction) override;
+  void fire();
+  QVector<Shot*> getShots();
+private:
+  QVector<Shot*> shots;
 
-signals:
 
-public slots:
 };
 
 #endif // PLAYER_H

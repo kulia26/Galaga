@@ -7,10 +7,14 @@
 class SkyStar : public GameObject
 {
 public:
-  QColor color;
-  int shows;
   SkyStar();
   void move() override;
+  int getShows();
+  QColor getColor();
+protected:
+  int shows;
+private:
+  QColor color;
 };
 
 #endif // SKYSTAR_H

@@ -1,11 +1,23 @@
-#ifndef ENEMY_H
+﻿#ifndef ENEMY_H
 #define ENEMY_H
 
+#include "gameobject.h"
+#include "shot.h"
+#include <QVector>
 
-class enemy : public GameObject
+class Enemy : public GameObject
 {
 public:
-  enemy();
+  enum Type { Lobster, Fly, Wasp };
+  explicit Enemy(Type _type);
+  void move() override;
+  void setDirection(GameObject::Direction direction = Direction::none);
+  void fire();
+  QVector<Shot*> getShots();
+private:
+  Type type;
+  Direction direction;
+  QVector<Shot*> shots;
 };
 
 #endif // ENEMY_H

@@ -8,15 +8,9 @@ Player::Player()
 rect  = QRect(268,700,48,48);
 pixmap = QPixmap(":/images/images/sprites.png").copy(QRect(172,35,9,10));
 direction = Direction::none;
-setSpeed(5);
+speed = 10;
 fireGun = false;
 }
-
-QPixmap Player::getPixmap()
-{
-return pixmap;
-}
-
 
 void Player::move()
 {

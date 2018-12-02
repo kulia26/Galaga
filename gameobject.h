@@ -9,12 +9,11 @@ class GameObject
 {
 public:
   enum Direction { left, right, top, bottom, none };
-  explicit GameObject();
-  virtual ~GameObject();
+  GameObject();
   QRect getRect();
   QPixmap getPixmap();
   virtual void move();
-  virtual void setSpeed(int speed);
+  virtual ~GameObject();
 protected:
   int speed;
   QRect rect;

@@ -26,7 +26,3 @@ void GameObject::move()
 
 }
 
-void GameObject::setSpeed(int _speed)
-{
-  speed = _speed;
-}

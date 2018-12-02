@@ -4,10 +4,12 @@
 #include <QTimer>
 #include "skystar.h"
 #include "player.h"
+#include "enemy.h"
 #include <QWidget>
 #include <QKeyEvent>
 #include <QEventLoop>
 #include <iostream>
+#include <cmath>
 
 Game::Game(QWidget *parent) :
   QWidget(parent),
@@ -23,6 +25,11 @@ Game::Game(QWidget *parent) :
   }
 
   player = new Player();
+
+
+  enemies.push_back(new Enemy(Enemy::Type::Lobster));
+  enemies.push_back(new Enemy(Enemy::Type::Fly));
+  enemies.push_back(new Enemy(Enemy::Type::Wasp));
 
   QTimer *timer = new QTimer(this);
   connect(timer, SIGNAL(timeout()), this, SLOT(update()));
@@ -68,32 +75,41 @@ void Game::keyReleaseEvent(QKeyEvent *event)
 
 void Game::paintEvent(QPaintEvent *event)
 {
-  //Встановлюємо колір вікна в зелений
-  //setPalette(QPalette(QPalette::Window,Qt::black));
   QPainter painter(this);
   painter.setPen(Qt::NoPen);
+  //draw stars
   for(int i = 0; i < sky.size(); i++){
-      QBrush brush(sky[i]->color);
+      QBrush brush(sky[i]->getColor());
       painter.setBrush(brush);
       painter.drawRect(sky[i]->getRect());
       sky[i]->move();
-      if (sky[i]->shows > 50){
+      //remove old stars
+      if (sky[i]->getShows() > 50){
          sky.remove(i);
          sky.push_back(new SkyStar());
       }
   }
-
-  // make everything move();
-  QVector<Shot*> shots = player->getShots();
-  for(int i = 0; i < shots.size(); i++){
-      painter.drawPixmap(shots[i]->getRect(),shots[i]->getPixmap());
-      shots[i]->move();
+  //draw shots
+  for(int i = 0; i < player->getShots().size(); i++){
+      painter.drawPixmap(player->getShots()[i]->getRect(),player->getShots()[i]->getPixmap());
+      player->getShots()[i]->move();
   }
+  //move player
   player->move();
+  //fire if player is firegun
   if(player->isFireGun()){
       player->fire();
   }
+  //draw player
   painter.drawPixmap(player->getRect(),player->getPixmap());
+  //draw enemies
+  for(int i = 0; i < enemies.length(); i++){
+      painter.drawPixmap(enemies[i]->getRect(),enemies[i]->getPixmap());
+      enemies[i]->move();
+  }
+
+
+
 }
 
 

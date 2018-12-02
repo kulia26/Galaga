@@ -4,7 +4,7 @@ Shot::Shot(QRect rect)
 {
   this->rect = rect;
   pixmap = QPixmap(":/images/images/sprites.png").copy(QRect(222,213,3,6));
-  setSpeed(10);
+  speed = 10;
 }
 
 void Shot::move()

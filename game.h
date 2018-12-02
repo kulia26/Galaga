@@ -5,6 +5,7 @@
 #include <QVector>
 #include "skystar.h"
 #include "player.h"
+#include "enemy.h"
 
 namespace Ui {
   class Game;
@@ -16,12 +17,13 @@ class Game : public QWidget
 private:
   Player* player;
   Ui::Game *ui;
+  QVector<SkyStar*> sky;
+  QVector<Enemy*> enemies;
 public:
   explicit Game(QWidget *parent = nullptr);
   void paintEvent(QPaintEvent *event);
   void keyPressEvent(QKeyEvent *event);
   void keyReleaseEvent(QKeyEvent *event);
-  QVector<SkyStar*> sky;
   ~Game();
 
 };

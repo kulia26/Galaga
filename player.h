@@ -10,7 +10,6 @@ class Player : public GameObject
 {
 public:
   explicit Player();
-  QPixmap getPixmap();
   void move() override;
   void setDirection(GameObject::Direction direction = Direction::none);
   void fire();

@@ -13,8 +13,10 @@ public:
   virtual ~GameObject();
   QRect getRect();
   QPixmap getPixmap();
-  virtual void move(Direction direction);
+  virtual void move();
+  virtual void setSpeed(int speed);
 protected:
+  int speed;
   QRect rect;
   QPixmap pixmap;
 };

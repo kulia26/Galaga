@@ -7,8 +7,10 @@ GameObject::GameObject()
 
 GameObject::~GameObject()
 {
-
+  delete this;
 }
+
+
 QRect GameObject::getRect()
 {
   return rect;
@@ -19,7 +21,12 @@ QPixmap GameObject::getPixmap()
   return pixmap;
 }
 
-void GameObject::move(Direction direction)
+void GameObject::move()
 {
 
+}
+
+void GameObject::setSpeed(int _speed)
+{
+  speed = _speed;
 }

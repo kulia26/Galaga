@@ -30,14 +30,16 @@ SOURCES += \
     skystar.cpp \
     player.cpp \
     gameobject.cpp \
-    shot.cpp
+    shot.cpp \
+    enemy.cpp
 
 HEADERS += \
         game.h \
     skystar.h \
     player.h \
     gameobject.h \
-    shot.h
+    shot.h \
+    enemy.h
 
 FORMS += \
         game.ui

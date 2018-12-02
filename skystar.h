@@ -10,7 +10,7 @@ public:
   QColor color;
   int shows;
   SkyStar();
-  void move(Direction direction) override;
+  void move() override;
 };
 
 #endif // SKYSTAR_H

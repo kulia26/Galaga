@@ -6,7 +6,7 @@ class Shot : public GameObject
 {
 public:
   Shot(QRect rect);
-  void move(Direction direction) override;
+  void move() override;
 };
 
 #endif // SHOT_H

@@ -7,6 +7,7 @@
 #include <QWidget>
 #include <QKeyEvent>
 #include <QEventLoop>
+#include <iostream>
 
 Game::Game(QWidget *parent) :
   QWidget(parent),
@@ -36,20 +37,33 @@ Game::~Game()
 void Game::keyPressEvent(QKeyEvent *event)
 {
   // просто задаем нужное направление
+
   if (event->key() == Qt::Key_Left) {
-    player->move(GameObject::Direction::left);
+    player->setDirection(GameObject::Direction::left);
   }
   if ( event->key() == Qt::Key_Right ) {
-    player->move(GameObject::Direction::right);
+    player->setDirection(GameObject::Direction::right);
   }
   if ( event->key() == Qt::Key_Space ) {
     player->fire();
+    if(event->isAutoRepeat()){
+        player->makeFireGun(true);
+    }
   }
+
+
+
 }
 
 void Game::keyReleaseEvent(QKeyEvent *event)
 {
   //меняем направление в нон
+  if (event->key() == Qt::Key_Left || event->key() == Qt::Key_Right) {
+    player->setDirection(GameObject::Direction::none);
+  }
+  if ( event->key() == Qt::Key_Space ) {
+    player->makeFireGun(false);
+  }
 }
 
 void Game::paintEvent(QPaintEvent *event)
@@ -62,8 +76,8 @@ void Game::paintEvent(QPaintEvent *event)
       QBrush brush(sky[i]->color);
       painter.setBrush(brush);
       painter.drawRect(sky[i]->getRect());
-      sky[i]->move(GameObject::Direction::bottom);
-      if (sky[i]->shows > 35){
+      sky[i]->move();
+      if (sky[i]->shows > 50){
          sky.remove(i);
          sky.push_back(new SkyStar());
       }
@@ -73,9 +87,12 @@ void Game::paintEvent(QPaintEvent *event)
   QVector<Shot*> shots = player->getShots();
   for(int i = 0; i < shots.size(); i++){
       painter.drawPixmap(shots[i]->getRect(),shots[i]->getPixmap());
-      shots[i]->move(GameObject::Direction::top);
+      shots[i]->move();
   }
-
+  player->move();
+  if(player->isFireGun()){
+      player->fire();
+  }
   painter.drawPixmap(player->getRect(),player->getPixmap());
 }
 

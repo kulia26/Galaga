@@ -10,6 +10,7 @@
 #include <QEventLoop>
 #include <iostream>
 #include <cmath>
+#include <QPoint>
 
 Game::Game(QWidget *parent) :
   QWidget(parent),
@@ -27,6 +28,11 @@ Game::Game(QWidget *parent) :
   player = new Player();
 
 
+  enemies.push_back(new Enemy(Enemy::Type::Lobster));
+  enemies.push_back(new Enemy(Enemy::Type::Lobster));
+  enemies.push_back(new Enemy(Enemy::Type::Lobster));
+  enemies.push_back(new Enemy(Enemy::Type::Lobster));
+  enemies.push_back(new Enemy(Enemy::Type::Lobster));
   enemies.push_back(new Enemy(Enemy::Type::Lobster));
   enemies.push_back(new Enemy(Enemy::Type::Fly));
   enemies.push_back(new Enemy(Enemy::Type::Wasp));
@@ -90,7 +96,7 @@ void Game::paintEvent(QPaintEvent *event)
       }
   }
   //draw shots
-  for(int i = 0; i < player->getShots().size(); i++){
+  for(int i = 0; i < player->getShots().length(); i++){
       painter.drawPixmap(player->getShots()[i]->getRect(),player->getShots()[i]->getPixmap());
       player->getShots()[i]->move();
   }
@@ -104,8 +110,26 @@ void Game::paintEvent(QPaintEvent *event)
   painter.drawPixmap(player->getRect(),player->getPixmap());
   //draw enemies
   for(int i = 0; i < enemies.length(); i++){
-      painter.drawPixmap(enemies[i]->getRect(),enemies[i]->getPixmap());
+      painter.drawPixmap(enemies[i]->getRect(),enemies[i]->getFrame());
       enemies[i]->move();
+      for(int j = 0; j < player->getShots().length(); j++){
+          if(QRect(enemies[i]->getRect() & player->getShots()[j]->getRect()).size() != QSize(0,0)){
+              explosions.push_back(new Explosion(QPoint(enemies[i]->getRect().x(),enemies[i]->getRect().y())));
+              enemies.remove(i);
+              player->removeShot(j);
+              break;
+            }
+      }
+  }
+  for(int i = 0; i < explosions.length(); i++){
+      painter.drawPixmap(explosions[i]->getRect(),explosions[i]->getFrame());
+      if(explosions[i]->getFramesCount() != 4){
+          explosions[i]->move();
+        }
+      else{
+          explosions.remove(i);
+        }
+
   }
 
 

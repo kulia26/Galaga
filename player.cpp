@@ -57,5 +57,8 @@ bool Player::isFireGun()
   return fireGun ? true : false;
 }
 
-
+void Player::removeShot(int i)
+{
+  shots.remove(i);
+}
 

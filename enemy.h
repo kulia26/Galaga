@@ -3,13 +3,14 @@
 
 #include "gameobject.h"
 #include "shot.h"
+#include "animated.h"
 #include <QVector>
 
-class Enemy : public GameObject
+class Enemy : public GameObject, public Animated
 {
 public:
   enum Type { Lobster, Fly, Wasp };
-  explicit Enemy(Type _type);
+  explicit Enemy(Type type);
   void move() override;
   void setDirection(GameObject::Direction direction = Direction::none);
   void fire();

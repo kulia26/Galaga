@@ -6,7 +6,7 @@
 #include "skystar.h"
 #include "player.h"
 #include "enemy.h"
-
+#include "explosion.h"
 namespace Ui {
   class Game;
 }
@@ -19,6 +19,7 @@ private:
   Ui::Game *ui;
   QVector<SkyStar*> sky;
   QVector<Enemy*> enemies;
+  QVector<Explosion*> explosions;
 public:
   explicit Game(QWidget *parent = nullptr);
   void paintEvent(QPaintEvent *event);

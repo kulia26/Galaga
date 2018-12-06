@@ -16,5 +16,9 @@
         <file>images/GalaxianAquaAlien2.gif</file>
         <file>images/GalaxianAquaAlien.gif</file>
         <file>images/sprites.png</file>
+        <file>images/LobsterSprites.png</file>
+        <file>images/FlySprites.png</file>
+        <file>images/WaspSprites.png</file>
+        <file>images/ExplosionSprites.png</file>
     </qresource>
 </RCC>

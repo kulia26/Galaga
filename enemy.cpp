@@ -1,29 +1,28 @@
 ﻿#include "enemy.h"
+#include "animated.h"
 #include <cmath>
 #include <iostream>
-
-Enemy::Enemy(Enemy::Type _type):GameObject()
+#include <QPixmap>
+#include <QRandomGenerator>
+Enemy::Enemy(Enemy::Type type):GameObject(),Animated()
 {
-  rect  = QRect(0,0,36,36);
-  type = _type;
   if(type == Type::Lobster){
-      pixmap = QPixmap(":/images/images/sprites.png").copy(QRect(156,83,10,10));
-       rect.moveLeft(rect.x()+36);
+      pixmap = QPixmap(":/images/images/LobsterSprites.png");
   }
   if(type == Type::Fly){
-      pixmap = QPixmap(":/images/images/sprites.png").copy(QRect(156,99,10,10));
+      pixmap = QPixmap(":/images/images/FlySprites.png");
   }
   if(type == Type::Wasp){
-      pixmap = QPixmap(":/images/images/sprites.png").copy(QRect(156,115,10,10));
-      rect.moveLeft(rect.x()+72);
+      pixmap = QPixmap(":/images/images/WaspSprites.png");
   }
 
   direction = Direction::none;
   speed = 1;
+  makeFramesFromPixmap(&pixmap, GameObjectType::Enemy);
+  rect  = QRect(QRandomGenerator::global()->bounded(20,500),QRandomGenerator::global()->bounded(20,500),frame->width()*3,frame->height()*3);
 }
 
 void Enemy::move()
 {
-  rect.moveTop(rect.x()+speed);
-  rect.moveLeft(rect.y()+speed);
+  animate(8, Animated::Type::Stay, GameObjectType::Enemy);
 }

@@ -31,7 +31,9 @@ SOURCES += \
     player.cpp \
     gameobject.cpp \
     shot.cpp \
-    enemy.cpp
+    enemy.cpp \
+    animated.cpp \
+    explosion.cpp
 
 HEADERS += \
         game.h \
@@ -39,7 +41,9 @@ HEADERS += \
     player.h \
     gameobject.h \
     shot.h \
-    enemy.h
+    enemy.h \
+    animated.h \
+    explosion.h
 
 FORMS += \
         game.ui

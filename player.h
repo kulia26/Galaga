@@ -16,6 +16,7 @@ public:
   QVector<Shot*> getShots();
   void makeFireGun(bool);
   bool isFireGun();
+  void removeShot(int i);
 private:
   Direction direction;
   bool fireGun;

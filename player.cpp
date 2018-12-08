@@ -54,7 +54,7 @@ void Player::makeFireGun(bool firegun)
 
 bool Player::isFireGun()
 {
-  return fireGun ? true : false;
+  return fireGun;
 }
 
 void Player::removeShot(int i)

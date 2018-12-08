@@ -6,39 +6,36 @@
 
 Animated::Animated()
 {
-  framesCount = 0;
+
 }
 
 
-void Animated::makeFramesFromPixmap(QPixmap* pixmap, GameObjectType gameObject){
-  if(gameObject == GameObjectType::Enemy){
+void Animated::makeFramesFromPixmap(QPixmap* pixmap, GameObject::Type gameObject){
+  if(gameObject == GameObject::Type::Enemy){
       for(int i=0; i<9;i++){
           frames.push_back(new QPixmap(pixmap->copy(16*i,0,16,10)));
       }
     }
-  if(gameObject == GameObjectType::Explosion){
+  if(gameObject == GameObject::Type::Explosion){
       for(int i=0; i<9;i++){
           frames.push_back(new QPixmap(pixmap->copy(30*i,0,30,24)));
       }
     }
   frame = frames.first();
-  std::cout << frames.length()<<std::endl;
-
-
 }
 
-void Animated::animate(int delay, Type type, GameObjectType gameObject){
-if(framesCount % delay == 0 && type == Type::Stay && gameObject == GameObjectType::Enemy){
+void Animated::animate(int delay, Type type, GameObject::Type gameObject){
+if(framesCount % delay == 0 && type == Type::Stay && gameObject == GameObject::Type::Enemy){
       if(frames.indexOf(frame)==7){
         frame = frames[6];
       }
       else{
        frame = frames[7];
       }
-  }
-if(gameObject == GameObjectType::Explosion && framesCount % delay == 0){
-    int i = frames.indexOf(frame);
-    frame = frames[++i];
+}
+if(gameObject == GameObject::Type::Explosion && framesCount % delay == 0){
+    frame = frames[frames.indexOf(frame)+1];
+
 }
 if(framesCount > 1000){
     framesCount = 0;
@@ -50,6 +47,6 @@ QPixmap Animated::getFrame(){
 return *frame;
 }
 
-int Animated::getFramesCount(){
+int Animated::getCurrentFrame(){
 return frames.indexOf(frame);
 }

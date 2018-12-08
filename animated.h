@@ -3,18 +3,17 @@
 
 #include <QVector>
 #include <QPixmap>
-
+#include "gameobject.h"
 
 class Animated
 {
 public:
   enum Type {MoveLeft, MoveRight, MoveDown, MoveUp, Stay};
-  enum GameObjectType{Player, Enemy, Explosion};
   Animated();
-  void makeFramesFromPixmap(QPixmap* pixmap, GameObjectType gameObject);
-  void animate(int delay, Type type, GameObjectType gameObject);
+  void makeFramesFromPixmap(QPixmap* pixmap, GameObject::Type gameObject);
+  void animate(int delay, Type type, GameObject::Type gameObject);
   QPixmap getFrame();
-  int getFramesCount();
+  int getCurrentFrame();
   QPixmap* frame;
   QVector<QPixmap*> frames;
   int framesCount;

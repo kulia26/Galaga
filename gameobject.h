@@ -9,6 +9,7 @@ class GameObject
 {
 public:
   enum Direction { left, right, top, bottom, none };
+  enum Type{Player, Enemy, Explosion};
   GameObject();
   QRect getRect();
   QPixmap getPixmap();

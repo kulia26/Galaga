@@ -36,6 +36,10 @@ Game::Game(QWidget *parent) :
   enemies.push_back(new Enemy(Enemy::Type::Lobster));
   enemies.push_back(new Enemy(Enemy::Type::Fly));
   enemies.push_back(new Enemy(Enemy::Type::Wasp));
+  enemies.push_back(new Enemy(Enemy::Type::Fly));
+  enemies.push_back(new Enemy(Enemy::Type::Wasp));
+  enemies.push_back(new Enemy(Enemy::Type::Fly));
+  enemies.push_back(new Enemy(Enemy::Type::Wasp));
 
   QTimer *timer = new QTimer(this);
   connect(timer, SIGNAL(timeout()), this, SLOT(update()));
@@ -112,6 +116,7 @@ void Game::paintEvent(QPaintEvent *event)
   for(int i = 0; i < enemies.length(); i++){
       painter.drawPixmap(enemies[i]->getRect(),enemies[i]->getFrame());
       enemies[i]->move();
+      //проверяем на коллизии shots и enemies
       for(int j = 0; j < player->getShots().length(); j++){
           if(QRect(enemies[i]->getRect() & player->getShots()[j]->getRect()).size() != QSize(0,0)){
               explosions.push_back(new Explosion(QPoint(enemies[i]->getRect().x(),enemies[i]->getRect().y())));
@@ -123,7 +128,7 @@ void Game::paintEvent(QPaintEvent *event)
   }
   for(int i = 0; i < explosions.length(); i++){
       painter.drawPixmap(explosions[i]->getRect(),explosions[i]->getFrame());
-      if(explosions[i]->getFramesCount() != 4){
+      if(explosions[i]->getCurrentFrame() != 4){
           explosions[i]->move();
         }
       else{

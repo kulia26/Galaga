@@ -18,11 +18,11 @@ Enemy::Enemy(Enemy::Type type):GameObject(),Animated()
 
   direction = Direction::none;
   speed = 1;
-  makeFramesFromPixmap(&pixmap, GameObjectType::Enemy);
+  makeFramesFromPixmap(&pixmap, GameObject::Type::Enemy);
   rect  = QRect(QRandomGenerator::global()->bounded(20,500),QRandomGenerator::global()->bounded(20,500),frame->width()*3,frame->height()*3);
 }
 
 void Enemy::move()
 {
-  animate(8, Animated::Type::Stay, GameObjectType::Enemy);
+  animate(8, Animated::Type::Stay, GameObject::Type::Enemy);
 }

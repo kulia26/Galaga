@@ -33,6 +33,14 @@ if(framesCount % delay == 0 && type == Type::Stay && gameObject == GameObject::T
        frame = frames[7];
       }
 }
+if(framesCount % delay == 0 && type == Type::MoveDownRight && gameObject == GameObject::Type::Enemy){
+      if(frames.indexOf(frame)==5){
+        frame = frames[4];
+      }
+      else{
+       frame = frames[5];
+      }
+}
 if(gameObject == GameObject::Type::Explosion && framesCount % delay == 0){
     frame = frames[frames.indexOf(frame)+1];
 

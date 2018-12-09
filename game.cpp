@@ -27,19 +27,18 @@ Game::Game(QWidget *parent) :
 
   player = new Player();
 
+  for(int i =1; i<9; i++){
+      enemies.push_back(new Enemy(Enemy::Type::Lobster,-i*QPoint(30,30),QPoint(30*i,400-30*i),40+i*2));
+  }
 
-  enemies.push_back(new Enemy(Enemy::Type::Lobster));
-  enemies.push_back(new Enemy(Enemy::Type::Lobster));
-  enemies.push_back(new Enemy(Enemy::Type::Lobster));
-  enemies.push_back(new Enemy(Enemy::Type::Lobster));
-  enemies.push_back(new Enemy(Enemy::Type::Lobster));
-  enemies.push_back(new Enemy(Enemy::Type::Lobster));
-  enemies.push_back(new Enemy(Enemy::Type::Fly));
-  enemies.push_back(new Enemy(Enemy::Type::Wasp));
-  enemies.push_back(new Enemy(Enemy::Type::Fly));
-  enemies.push_back(new Enemy(Enemy::Type::Wasp));
-  enemies.push_back(new Enemy(Enemy::Type::Fly));
-  enemies.push_back(new Enemy(Enemy::Type::Wasp));
+  for(int i =1; i<10; i++){
+      enemies.push_back(new Enemy(Enemy::Type::Fly,-i*QPoint(30,30),QPoint(400-30*i,600),40+i*2));
+  }
+
+  for(int i =1; i<9; i++){
+       enemies.push_back(new Enemy(Enemy::Type::Wasp,-i*QPoint(30,30),QPoint(550-30*i,400-30*i),40+i*2));
+  }
+
 
   QTimer *timer = new QTimer(this);
   connect(timer, SIGNAL(timeout()), this, SLOT(update()));

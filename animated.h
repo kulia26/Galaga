@@ -8,7 +8,7 @@
 class Animated
 {
 public:
-  enum Type {MoveLeft, MoveRight, MoveDown, MoveUp, Stay};
+  enum Type {MoveLeft, MoveDownRight, MoveDown, MoveUp, Stay};
   Animated();
   void makeFramesFromPixmap(QPixmap* pixmap, GameObject::Type gameObject);
   void animate(int delay, Type type, GameObject::Type gameObject);

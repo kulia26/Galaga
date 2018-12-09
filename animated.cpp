@@ -4,20 +4,20 @@
 #include <iostream>
 
 
-Animated::Animated()
+Animated::Animated(GameObject::Type gameObject)
 {
-
+  this->gameObject = gameObject;
 }
 
 
-void Animated::makeFramesFromPixmap(QPixmap* pixmap, GameObject::Type gameObject){
+void Animated::makeFramesFromPixmap(QPixmap* pixmap){
   if(gameObject == GameObject::Type::Enemy){
       for(int i=0; i<9;i++){
           frames.push_back(new QPixmap(pixmap->copy(16*i,0,16,10)));
       }
     }
   if(gameObject == GameObject::Type::Explosion){
-      for(int i=0; i<9;i++){
+      for(int i=0; i<5;i++){
           frames.push_back(new QPixmap(pixmap->copy(30*i,0,30,24)));
       }
     }

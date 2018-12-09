@@ -34,7 +34,7 @@ SOURCES += \
     enemy.cpp \
     animated.cpp \
     explosion.cpp \
-    track.cpp
+    moved.cpp
 
 HEADERS += \
         game.h \
@@ -45,7 +45,7 @@ HEADERS += \
     enemy.h \
     animated.h \
     explosion.h \
-    track.h
+    moved.h
 
 FORMS += \
         game.ui

@@ -10,7 +10,7 @@ class Player : public GameObject
 {
 public:
   explicit Player();
-  void move() override;
+  void move() final override;
   void setDirection(GameObject::Direction direction = Direction::none);
   void fire();
   QVector<Shot*> getShots();

@@ -8,13 +8,16 @@
 class Animated
 {
 public:
-  enum Type {MoveLeft, MoveDownRight, MoveDown, MoveUp, Stay};
-  Animated();
-  void makeFramesFromPixmap(QPixmap* pixmap, GameObject::Type gameObject);
+  enum Type {MoveDownRight,Stay};
+  explicit Animated(GameObject::Type gameObject);
+  void makeFramesFromPixmap(QPixmap* pixmap);
   void animate(int delay, Type type, GameObject::Type gameObject);
   QPixmap getFrame();
   int getCurrentFrame();
+protected:
   QPixmap* frame;
+private:
+  GameObject::Type gameObject;
   QVector<QPixmap*> frames;
   int framesCount;
   int delay;

@@ -1,21 +1,20 @@
-﻿#include "track.h"
+﻿#include "moved.h"
 #include <cmath>
 #include <QRect>
 
 
-Track::Track(Path _path, QPoint _begin, QPoint _end, int _speed)
+Moved::Moved(Path _path, QPoint _begin, QPoint _end, int _speed)
 {
   path =_path;
   begin = _begin;
   end = _end;
-  phi = 0;
   speed = _speed;
   position = _begin;
   theEnd = false;
 
 }
 
-QPoint Track::getNextPoint(){
+QPoint Moved::getNextPoint(){
   if((QRect(position,end).height()<2 || QRect(position,end).width()<2) && path == Path::Line){
       position = end;
       theEnd = true;
@@ -37,11 +36,11 @@ QPoint Track::getNextPoint(){
 }
 
 
-bool Track::isEnded(){
+bool Moved::isEnded(){
   return theEnd;
 }
 
-Track::Path Track::getTrackPath(){
+Moved::Path Moved::getMovedPath(){
   return path;
 }
 

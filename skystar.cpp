@@ -1,7 +1,8 @@
 ﻿#include "skystar.h"
+#include "moved.h"
 #include <QRandomGenerator>
 
-SkyStar::SkyStar()
+SkyStar::SkyStar():GameObject (), Moved()
 {
   int size  = QRandomGenerator::global()->bounded(1,3);
   speed = QRandomGenerator::global()->bounded(1,5);
@@ -15,6 +16,7 @@ SkyStar::SkyStar()
     }
   shows = shows + QRandomGenerator::global()->bounded(-15,10);
 }
+
 
 void SkyStar::move()
 {

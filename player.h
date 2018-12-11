@@ -3,24 +3,28 @@
 
 #include <QObject>
 #include <QWidget>
+#include <QVector>
 #include "gameobject.h"
 #include "shot.h"
+#include "moved.h"
+#include "animated.h"
 
-class Player : public GameObject
+class Player : public GameObject, public Moved, public Animated
 {
 public:
   explicit Player();
   void move() final override;
-  void setDirection(GameObject::Direction direction = Direction::none);
+  void setDirection(Moved::Path direction = Moved::Path::None);
   void fire();
-  QVector<Shot*> getShots();
+  QVector<class Shot*> getShots();
   void makeFireGun(bool);
   bool isFireGun();
   void removeShot(int i);
+  void read(const QJsonObject &json);
+  void write(QJsonObject &json) const;
 private:
-  Direction direction;
   bool fireGun;
-  QVector<Shot*> shots;
+  QVector<class Shot*> shots;
 
 
 

@@ -8,17 +8,17 @@
 class GameObject
 {
 public:
-  enum Direction { left, right, top, bottom, none };
-  enum Type{Player, Enemy, Explosion};
-  GameObject();
+  enum Type{Player, Enemy, Explosion, Shot};
+  explicit GameObject();
+  explicit GameObject(QRect rect);
   QRect getRect();
-  QPixmap getPixmap();
-  virtual void move();
+
   virtual ~GameObject();
+
+  void read(const QJsonObject &json);
+  void write(QJsonObject &json) const;
 protected:
-  int speed;
   QRect rect;
-  QPixmap pixmap;
 };
 
 #endif // GAMEOBJECT_H

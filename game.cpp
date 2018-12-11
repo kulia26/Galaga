@@ -11,6 +11,8 @@
 #include <iostream>
 #include <cmath>
 #include <QPoint>
+#include <QJsonArray>
+#include <QJsonDocument>
 
 Game::Game(QWidget *parent) :
   QWidget(parent),
@@ -25,6 +27,13 @@ Game::Game(QWidget *parent) :
     sky.push_back(new SkyStar);
   }
 
+  QTimer *timer = new QTimer(this);
+  connect(timer, SIGNAL(timeout()), this, SLOT(update()));
+  timer->start(40);
+}
+
+void Game::newGame()
+{
   player = new Player();
 
   for(int i =1; i<9; i++){
@@ -38,27 +47,88 @@ Game::Game(QWidget *parent) :
   for(int i =1; i<9; i++){
        enemies.push_back(new Enemy(Enemy::Type::Wasp,-i*QPoint(30,30),QPoint(550-30*i,400-30*i),40+i*2));
   }
-
-
-  QTimer *timer = new QTimer(this);
-  connect(timer, SIGNAL(timeout()), this, SLOT(update()));
-  timer->start(40);
 }
 
 Game::~Game()
 {
   delete ui;
 }
+
+void Game::read(const QJsonObject &json)
+{
+    player = new Player();
+    std::cout <<"Game::read"<<std::endl;
+    player->read(json["player"].toObject());
+    std::cout <<"Game::read2"<<std::endl;
+
+    QJsonArray enemiesArray = json["enemies"].toArray();
+    for (int enemyIndex = 0; enemyIndex < enemiesArray.size(); ++enemyIndex) {
+        std::cout <<enemyIndex<<std::endl;
+        QJsonObject enemyObject = enemiesArray[enemyIndex].toObject();
+        enemies.insert(enemyIndex,new Enemy());
+        enemies[enemyIndex]->read(enemyObject);
+    }
+}
+
+void Game::write(QJsonObject &json) const
+{
+    QJsonObject playerObject;
+    player->write(playerObject);
+    json["player"] = playerObject;
+
+    QJsonArray enemiesArray;
+    foreach (const Enemy* enemy, enemies) {
+        QJsonObject enemyObject;
+        enemy->write(enemyObject);
+        enemiesArray.append(enemyObject);
+    }
+    json["enemies"] = enemiesArray;
+}
+
+bool Game::loadGame()
+{
+  std::cout <<"Game::loadGame"<<std::endl;
+    QFile loadFile(QStringLiteral("save.json"));
+
+    if (!loadFile.open(QIODevice::ReadOnly)) {
+        qWarning("Couldn't open save file.");
+        return false;
+    }
+
+    QByteArray saveData = loadFile.readAll();
+
+    QJsonDocument loadDoc(QJsonDocument::fromJson(saveData));
+
+    read(loadDoc.object());
+
+    return true;
+}
+
+bool Game::saveGame() const
+{
+    QFile saveFile(QStringLiteral("save.json"));
+
+    if (!saveFile.open(QIODevice::WriteOnly)) {
+        qWarning("Couldn't open save file.");
+        return false;
+    }
+
+    QJsonObject gameObject;
+    write(gameObject);
+    QJsonDocument saveDoc(gameObject);
+    saveFile.write(saveDoc.toJson());
+
+    return true;
+}
 // каждый обьект имеет скорость и направление, нажатие кнопок лишь меняет направление
 void Game::keyPressEvent(QKeyEvent *event)
 {
   // просто задаем нужное направление
-
   if (event->key() == Qt::Key_Left) {
-    player->setDirection(GameObject::Direction::left);
+    player->setDirection(Moved::Path::Left);
   }
   if ( event->key() == Qt::Key_Right ) {
-    player->setDirection(GameObject::Direction::right);
+    player->setDirection(Moved::Path::Right);
   }
   if ( event->key() == Qt::Key_Space ) {
     player->fire();
@@ -66,16 +136,13 @@ void Game::keyPressEvent(QKeyEvent *event)
         player->makeFireGun(true);
     }
   }
-
-
-
 }
 
 void Game::keyReleaseEvent(QKeyEvent *event)
 {
   //меняем направление в нон
   if (event->key() == Qt::Key_Left || event->key() == Qt::Key_Right) {
-    player->setDirection(GameObject::Direction::none);
+    player->setDirection(Moved::Path::None);
   }
   if ( event->key() == Qt::Key_Space ) {
     player->makeFireGun(false);
@@ -135,9 +202,6 @@ void Game::paintEvent(QPaintEvent *event)
         }
 
   }
-
-
-
 }
 
 

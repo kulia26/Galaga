@@ -8,19 +8,21 @@
 #include <QVector>
 #include <QPoint>
 
-class Enemy : public GameObject, public Animated
+class Enemy : public GameObject, public Animated, public Moved
 {
 public:
   enum Type { Lobster, Fly, Wasp };
-  explicit Enemy(Type type, QPoint _start, QPoint _end, int speed);
+  explicit Enemy(Enemy::Type type, QPoint _start, QPoint _end,int _speed);
+  explicit Enemy();
   void move() override;
-  void setDirection(GameObject::Direction direction = Direction::none);
   void fire();
-  QVector<Shot*> getShots();
+  //QVector<Shot*> getShots();
+
+  void read(const QJsonObject &json);
+  void write(QJsonObject &json) const;
 private:
   Type type;
-  Direction direction;
-  QVector<Shot*> shots;
+  //QVector<Shot*> shots;
   QVector<Moved*> tracks;
   Moved* currentMoved;
 };

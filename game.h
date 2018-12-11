@@ -15,8 +15,8 @@ class Game : public QWidget
 {
   Q_OBJECT
 private:
-  Player* player;
   Ui::Game *ui;
+  Player* player;
   QVector<SkyStar*> sky;
   QVector<Enemy*> enemies;
   QVector<Explosion*> explosions;
@@ -26,6 +26,12 @@ public:
   void keyPressEvent(QKeyEvent *event);
   void keyReleaseEvent(QKeyEvent *event);
   ~Game();
+
+  bool loadGame();
+  bool saveGame() const;
+  void newGame();
+  void read(const QJsonObject &json);
+  void write(QJsonObject &json) const;
 
 };
 

@@ -1,8 +1,7 @@
 ﻿#include "explosion.h"
 
-Explosion::Explosion(QPoint point):GameObject (), Animated(GameObject::Explosion)
+Explosion::Explosion(QPoint point):GameObject(), Animated(GameObject::Explosion,QPixmap(":/images/images/ExplosionSprites.png"))
 {
-  pixmap = QPixmap(":/images/images/ExplosionSprites.png");
   makeFramesFromPixmap(&pixmap);
   rect  = QRect(point.x()-24,point.y()-24,frame->width()*3,frame->height()*3);
 }

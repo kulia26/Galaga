@@ -3,12 +3,13 @@
 
 #include <QWidget>
 #include "gameobject.h"
+#include "moved.h"
 
-class SkyStar : public GameObject
+class SkyStar : public GameObject, public Moved
 {
 public:
   SkyStar();
-  void move() override;
+  void move() final override;
   int getShows();
   QColor getColor();
 protected:

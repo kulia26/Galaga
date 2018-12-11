@@ -5,29 +5,36 @@
 #include <QPixmap>
 #include <QRandomGenerator>
 #include "moved.h"
-Enemy::Enemy(Enemy::Type type, QPoint _start, QPoint _end,int _speed):GameObject(),Animated(GameObject::Type::Enemy)
+#include <QJsonObject>
+#include <QJsonArray>
+Enemy::Enemy(Enemy::Type type, QPoint _start, QPoint _end,int _speed):GameObject(),Animated(GameObject::Type::Enemy), Moved()
 {
+  start = _start;
+  end = _end;
+  speed = _speed;
+  this->type = type;
   if(type == Type::Lobster){
-      pixmap = QPixmap(":/images/images/LobsterSprites.png");
+      setPixmap(":/images/images/LobsterSprites.png");
   }
   if(type == Type::Fly){
-      pixmap = QPixmap(":/images/images/FlySprites.png");
+      setPixmap(":/images/images/FlySprites.png");
   }
   if(type == Type::Wasp){
-      pixmap = QPixmap(":/images/images/WaspSprites.png");
+      setPixmap(":/images/images/WaspSprites.png");
   }
 
-  direction = Direction::none;
-  speed = 1;
   makeFramesFromPixmap(&pixmap);
-  rect  = QRect(_start.x(),_start.y(),frame->width()*3,frame->height()*3);
+  rect  = QRect(start.x(),start.y(),frame->width()*3,frame->height()*3);
 
-  tracks.push_back(new Moved(Moved::Path::Line,_start,_end,_speed));
-  tracks.push_back(new Moved(Moved::Path::Stay,_end,_end,2));
+  tracks.push_back(new Moved(Moved::Path::Line,start,end,speed));
+  tracks.push_back(new Moved(Moved::Path::Stay,end,end,2));
 
   currentMoved  = tracks.first();
 }
+Enemy::Enemy():GameObject(),Animated(GameObject::Type::Enemy), Moved()
+{
 
+}
 void Enemy::move()
 {
   rect.moveTo(currentMoved->getNextPoint());
@@ -43,4 +50,42 @@ void Enemy::move()
           currentMoved = tracks[i+1];
         }
     }
+}
+
+void Enemy::read(const QJsonObject &json)
+{
+    GameObject::read(json);
+    Moved::read(json);
+    Animated::read(json);
+
+
+    type = Enemy::Type(json["type"].toInt());
+    tracks.clear();
+        QJsonArray tracksArray = json["tracks"].toArray();
+        for (int trackIndex = 0; trackIndex < tracksArray.size(); trackIndex++) {
+
+            QJsonObject trackObject = tracksArray[trackIndex].toObject();
+            std::cout << trackIndex<<std::endl;
+            Moved* track = new Moved();
+            track->read(trackObject);
+            tracks.push_back(track);
+        }
+    std::cout<<tracks.length()<<std::endl;
+    currentMoved  = tracks.first();
+}
+
+void Enemy::write(QJsonObject &json) const
+{
+  GameObject::write(json);
+  Moved::write(json);
+  Animated::write(json);
+
+  json["type"] = type;
+  QJsonArray tracksArray;
+     foreach (const Moved* track, tracks) {
+         QJsonObject trackObject;
+         track->write(trackObject);
+         tracksArray.append(trackObject);
+     }
+  json["tracks"] = tracksArray;
 }

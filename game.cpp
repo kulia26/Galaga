@@ -37,15 +37,22 @@ void Game::newGame()
   player = new Player();
 
   for(int i =1; i<9; i++){
-      enemies.push_back(new Enemy(Enemy::Type::Lobster,-i*QPoint(30,30),QPoint(30*i,400-30*i),40+i*2));
+      Enemy* enemy = new Enemy(Enemy::Type::Lobster,-i*QPoint(30,30),40+i*2);
+      enemy->addRoute(new Route(Route::Path::Line,-i*QPoint(30,30),QPoint(30*i,400-30*i)));
+      enemy->addRoute(new Route(Route::Path::Stay,QPoint(30*i,400-30*i),QPoint(30*i,400-30*i)));
+      enemies.push_back(enemy);
   }
-
   for(int i =1; i<10; i++){
-      enemies.push_back(new Enemy(Enemy::Type::Fly,-i*QPoint(30,30),QPoint(400-30*i,600),40+i*2));
+      Enemy* enemy = new Enemy(Enemy::Type::Fly,-i*QPoint(30,30),40+i*2);
+      enemy->addRoute(new Route(Route::Path::Line,-i*QPoint(30,30),QPoint(400-30*i,600)));
+      enemy->addRoute(new Route(Route::Path::Stay,QPoint(400-30*i,600),QPoint(400-30*i,600)));
+      enemies.push_back(enemy);
   }
-
   for(int i =1; i<9; i++){
-       enemies.push_back(new Enemy(Enemy::Type::Wasp,-i*QPoint(30,30),QPoint(550-30*i,400-30*i),40+i*2));
+       Enemy* enemy = new Enemy(Enemy::Type::Wasp,-i*QPoint(30,30),40+i*2);
+       enemy->addRoute(new Route(Route::Path::Line,-i*QPoint(30,30),QPoint(550-30*i,400-30*i)));
+       enemy->addRoute(new Route(Route::Path::Stay,QPoint(550-30*i,400-30*i),QPoint(550-30*i,400-30*i)));
+       enemies.push_back(enemy);
   }
 }
 
@@ -125,10 +132,10 @@ void Game::keyPressEvent(QKeyEvent *event)
 {
   // просто задаем нужное направление
   if (event->key() == Qt::Key_Left) {
-    player->setDirection(Moved::Path::Left);
+    player->setCurrentRoute(Route::Path::Left);
   }
   if ( event->key() == Qt::Key_Right ) {
-    player->setDirection(Moved::Path::Right);
+    player->setCurrentRoute(Route::Path::Right);
   }
   if ( event->key() == Qt::Key_Space ) {
     player->fire();
@@ -142,7 +149,7 @@ void Game::keyReleaseEvent(QKeyEvent *event)
 {
   //меняем направление в нон
   if (event->key() == Qt::Key_Left || event->key() == Qt::Key_Right) {
-    player->setDirection(Moved::Path::None);
+    player->setCurrentRoute(Route::Path::None);
   }
   if ( event->key() == Qt::Key_Space ) {
     player->makeFireGun(false);
@@ -152,7 +159,7 @@ void Game::keyReleaseEvent(QKeyEvent *event)
 void Game::paintEvent(QPaintEvent *event)
 {
   QPainter painter(this);
-  painter.setPen(Qt::NoPen);
+  painter.setPen(Qt::PenStyle::NoPen);
   //draw stars
   for(int i = 0; i < sky.size(); i++){
       QBrush brush(sky[i]->getColor());
@@ -195,12 +202,11 @@ void Game::paintEvent(QPaintEvent *event)
   for(int i = 0; i < explosions.length(); i++){
       painter.drawPixmap(explosions[i]->getRect(),explosions[i]->getFrame());
       if(explosions[i]->getCurrentFrame() != 4){
-          explosions[i]->move();
+          explosions[i]->animate(GameObject::Animation::Stay);
         }
       else{
           explosions.remove(i);
         }
-
   }
 }
 

@@ -2,14 +2,15 @@
 #define EXPLOSION_H
 
 #include "gameobject.h"
-#include "animated.h"
+
 #include <QVector>
 
-class Explosion : public GameObject, public Animated
+class Explosion : public GameObject
 {
 public:
   explicit Explosion(QPoint point);
-  void move();
+  void animate(Animation type) final override;
+  void makeFramesFromPixmap() final override;
 };
 
 #endif // EXPLOSION_H

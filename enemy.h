@@ -3,28 +3,25 @@
 
 #include "gameobject.h"
 #include "shot.h"
-#include "animated.h"
-#include "moved.h"
+#include "route.h"
 #include <QVector>
 #include <QPoint>
 
-class Enemy : public GameObject, public Animated, public Moved
+class Enemy : public GameObject
 {
 public:
-  enum Type { Lobster, Fly, Wasp };
-  explicit Enemy(Enemy::Type type, QPoint _start, QPoint _end,int _speed);
+  enum class Type { Lobster, Fly, Wasp };
+  explicit Enemy(Enemy::Type type, QPoint start,int speed);
   explicit Enemy();
-  void move() override;
+  void move() final override;
+  void animate(Animation type) final override;
+  void makeFramesFromPixmap() final override;
   void fire();
-  //QVector<Shot*> getShots();
 
-  void read(const QJsonObject &json);
-  void write(QJsonObject &json) const;
+  void read(const QJsonObject &json) final override;
+  void write(QJsonObject &json) const final override;
 private:
   Type type;
-  //QVector<Shot*> shots;
-  QVector<Moved*> tracks;
-  Moved* currentMoved;
 };
 
 #endif // ENEMY_H

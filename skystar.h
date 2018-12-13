@@ -3,9 +3,9 @@
 
 #include <QWidget>
 #include "gameobject.h"
-#include "moved.h"
 
-class SkyStar : public GameObject, public Moved
+
+class SkyStar : public GameObject
 {
 public:
   SkyStar();

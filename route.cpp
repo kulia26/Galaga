@@ -1,35 +1,51 @@
-﻿#include "moved.h"
+﻿#include "route.h"
 #include <cmath>
 #include <QRect>
 #include <iostream>
 
-Moved::Moved(Path _path, QPoint _start, QPoint _end, int _speed)
+Route::Route()
 {
-  path =_path;
-  start = _start;
-  end = _end;
-  speed = _speed;
-  position = _start;
+
+}
+
+Route::~Route()
+{
+
+}
+
+Route::Route(Path path, QPoint start, QPoint end)
+{
+  this->path =path;
+  this->start = start;
+  this->end = end;
+  this->position = start;
   theEnd = false;
-
 }
 
-Moved::Moved()
+Route::Route(Path path)
 {
-  path = Path::None;
-
-}
-Moved::~Moved()
-{
-
+  this->path =path;
+  theEnd = false;
 }
 
-void Moved::move()
-{
-
+Route::Path Route::getRoutePath(){
+  return path;
 }
 
-QPoint Moved::getNextPoint(){
+QPoint Route::getNextPoint(int speed){
+
+  if(path == Path::Left){
+      dx = -speed;
+      dy = 0;
+    }
+  if(path == Path::Right){
+      dx = speed;
+      dy = 0;
+    }
+  if(path == Path::None){
+      dx = 0;
+      dy = 0;
+    }
   if((QRect(position,end).height()<2 || QRect(position,end).width()<2) && path == Path::Line){
       position = end;
       theEnd = true;
@@ -40,9 +56,9 @@ QPoint Moved::getNextPoint(){
         }
       if(path== Path::Stay){
           if(position.x()-end.x() <= -4){
-              dx = dx +speed/3;
+              dx = dx +speed/30;
             }else{
-                  dx = dx - speed/3;
+                  dx = dx - speed/30;
             }
         }
       position = QPoint(static_cast<int>(position.x()+dx),static_cast<int>(position.y()+dy));
@@ -50,20 +66,19 @@ QPoint Moved::getNextPoint(){
   return position;
 }
 
+QPoint Route::getNextPoint(int speed, QPoint position){
+ this->position = position;
+ return getNextPoint(speed);
+}
 
-bool Moved::isEnded(){
+bool Route::isEnded(){
   return theEnd;
 }
 
-Moved::Path Moved::getMovedPath(){
-  return path;
-}
-
-void Moved::read(const QJsonObject &json)
+void Route::read(const QJsonObject &json)
 {
-  std::cout <<"Moved::read1"<<std::endl;
-    speed = json["speed"].toInt();
-    path = Moved::Path(json["path"].toInt());
+    std::cout <<"Route::read1"<<std::endl;
+    path = Route::Path(json["path"].toInt());
     theEnd = json["theEnd"].toBool();
 
     QJsonObject startObject = json["start"].toObject();
@@ -76,13 +91,12 @@ void Moved::read(const QJsonObject &json)
     end.setY(endObject.value("y").toInt());
     position.setX(positionObject.value("x").toInt());
     position.setY(positionObject.value("y").toInt());
-    std::cout <<"Moved::read2"<<std::endl;
+    std::cout <<"Route::read2"<<std::endl;
 }
 
-void Moved::write(QJsonObject &json) const
+void Route::write(QJsonObject &json) const
 {
-    json["speed"] = speed;
-    json["path"] = path;
+    json["path"] = static_cast<int>(path);
     json["theEnd"] = false;
 
     QJsonObject startObject, endObject, positionObject;
@@ -97,5 +111,4 @@ void Moved::write(QJsonObject &json) const
     json["start"] = startObject;
     json["end"] = endObject;
     json["position"] = positionObject;
-
 }

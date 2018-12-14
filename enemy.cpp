@@ -8,7 +8,7 @@
 #include <QJsonObject>
 #include <QJsonArray>
 
-Enemy::Enemy(Enemy::Type type, QPoint start,int speed):GameObject()
+Enemy::Enemy(Enemy::Type type, QPoint start,double speed):GameObject()
 {
   gameObjectType = GameObject::Type::Enemy;
   this->speed = speed;

@@ -11,7 +11,7 @@ class Enemy : public GameObject
 {
 public:
   enum class Type { Lobster, Fly, Wasp };
-  explicit Enemy(Enemy::Type type, QPoint start,int speed);
+  explicit Enemy(Enemy::Type type, QPoint start,double speed);
   explicit Enemy();
   void move() final override;
   void animate(Animation type) final override;

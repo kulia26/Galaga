@@ -31,7 +31,7 @@ public:
   virtual void write(QJsonObject &json) const;
 protected:
   QRect rect;
-  int speed;
+  double speed;
   GameObject::Type gameObjectType;
   QPixmap* frame;
   QPixmap pixmap;

@@ -9,7 +9,7 @@ Explosion::Explosion(QPoint point):GameObject()
 }
 
 void Explosion::animate(Animation type){
-  if(framesCount % 2 == 0){
+  if(framesCount % 1 == 0){
       frame = frames[frames.indexOf(frame)+1];
   }
   if(framesCount > 1000){

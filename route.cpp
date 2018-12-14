@@ -20,6 +20,7 @@ Route::Route(Path path, QPoint start, QPoint end)
   this->end = end;
   this->position = start;
   theEnd = false;
+  q=M_PI/2;
 }
 
 Route::Route(Path path)
@@ -28,11 +29,18 @@ Route::Route(Path path)
   theEnd = false;
 }
 
+Route::Route(Path path, QPoint position)
+{
+  this->position = position;
+  this->path =path;
+  theEnd = false;
+}
+
 Route::Path Route::getRoutePath(){
   return path;
 }
 
-QPoint Route::getNextPoint(int speed){
+QPoint Route::getNextPoint(double speed){
 
   if(path == Path::Left){
       dx = -speed;
@@ -46,27 +54,62 @@ QPoint Route::getNextPoint(int speed){
       dx = 0;
       dy = 0;
     }
-  if((QRect(position,end).height()<2 || QRect(position,end).width()<2) && path == Path::Line){
+  if(QRect(QRect(end,QSize(30,30)) & QRect(position,QSize(30,30))).size() != QSize(0,0) && path == Path::Line){
       position = end;
       theEnd = true;
+      std::cout << QRect(position,end).width()<< std::endl;
     }else{
       if(path== Path::Line){
-          dx = (end.x() - start.x())/speed;
-          dy = (end.y() - start.y())/speed;
+
+              dx = (end.x() - start.x())*speed/3000;
+              dy = (end.y() - start.y())*speed/3000;
+
+          std::cout << dx << std::endl;
         }
       if(path== Path::Stay){
           if(position.x()-end.x() <= -4){
-              dx = dx +speed/30;
+              dx = dx + 0.75;
             }else{
-                  dx = dx - speed/30;
+                  dx = dx - 0.75;
             }
+        }
+      if(path == Path::Sin){
+          q = q + 0.3;
+          double t = q;
+          dx =  cos(t)*10;
+          dy =  sin(t)*sin(t)*10;
+        }
+      if(path == Path::Lemniscate){
+          q = q + 0.08*speed/50;
+          double t = q;
+          dx =  6*sqrt(2)*cos(t);
+          dy =  18*sqrt(2)*cos(t)*sin(t);
+
+
+          if(q > M_PI/2 and  q < M_PI){
+              dy = -dy;
+            }
+          if(q > M_PI and q < 3*M_PI/2){
+              dy = -dy;
+            }
+          if(q > 3*M_PI/2 and q < 2*M_PI){
+            }
+          if(q >= 2*M_PI){
+              theEnd = true;
+              return position;
+            }
+
+          position = QPoint(static_cast<int>(position.x()+static_cast<int>(dx)),static_cast<int>(position.y()+static_cast<int>(dy)));
+          return position;
         }
       position = QPoint(static_cast<int>(position.x()+dx),static_cast<int>(position.y()+dy));
     }
+
+
   return position;
 }
 
-QPoint Route::getNextPoint(int speed, QPoint position){
+QPoint Route::getNextPoint(double speed, QPoint position){
  this->position = position;
  return getNextPoint(speed);
 }

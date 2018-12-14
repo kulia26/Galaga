@@ -7,15 +7,16 @@
 class Route
 {
 public:
-  enum class Path {Line, Stay, Left, Right, Bottom, None};
+  enum class Path {Line, Stay, Left, Right, Bottom, None, Lemniscate, Sin};
 
   explicit Route();
   explicit Route(Route::Path path, QPoint start, QPoint end);
   explicit Route(Route::Path path);
+  explicit Route(Route::Path path, QPoint position);
   virtual ~Route();
 
-  QPoint getNextPoint(int speed);
-  QPoint getNextPoint(int speed,QPoint position);
+  QPoint getNextPoint(double speed);
+  QPoint getNextPoint(double speed,QPoint position);
   Route::Path getRoutePath();
   bool isEnded();
 
@@ -29,6 +30,7 @@ private:
   QPoint position;
   double dx;
   double dy;
+  double q;
   bool theEnd;
 };
 

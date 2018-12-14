@@ -27,6 +27,7 @@ Game::Game(QWidget *parent) :
     sky.push_back(new SkyStar);
   }
 
+
   QTimer *timer = new QTimer(this);
   connect(timer, SIGNAL(timeout()), this, SLOT(update()));
   timer->start(40);
@@ -35,7 +36,7 @@ Game::Game(QWidget *parent) :
 void Game::newGame()
 {
   player = new Player();
-
+/*
   for(int i =1; i<9; i++){
       Enemy* enemy = new Enemy(Enemy::Type::Lobster,-i*QPoint(30,30),40+i*2);
       enemy->addRoute(new Route(Route::Path::Line,-i*QPoint(30,30),QPoint(30*i,400-30*i)));
@@ -52,6 +53,15 @@ void Game::newGame()
        Enemy* enemy = new Enemy(Enemy::Type::Wasp,-i*QPoint(30,30),40+i*2);
        enemy->addRoute(new Route(Route::Path::Line,-i*QPoint(30,30),QPoint(550-30*i,400-30*i)));
        enemy->addRoute(new Route(Route::Path::Stay,QPoint(550-30*i,400-30*i),QPoint(550-30*i,400-30*i)));
+       enemies.push_back(enemy);
+  }
+*/
+  for(int i =1; i<2; i++){
+       Enemy* enemy = new Enemy(Enemy::Type::Wasp,-i*QPoint(20,20),70-i*4);
+       enemy->addRoute(new Route(Route::Path::Line,-i*QPoint(32,32),QPoint(300,300)));
+       enemy->addRoute(new Route(Route::Path::Lemniscate, QPoint(300,300)));
+       enemy->addRoute(new Route(Route::Path::Line,QPoint(300,300),QPoint(300-32*i,100)));
+       enemy->addRoute(new Route(Route::Path::Stay,QPoint(300-32*i,100),QPoint(300-32*i,100)));
        enemies.push_back(enemy);
   }
 }

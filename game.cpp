@@ -41,45 +41,30 @@ void Game::newGame()
       Enemy* enemy = new Enemy(Enemy::Type::Fly,QPoint(50,50) - 35*i*QPoint(1,1),20);
       enemy->addRoute(new Route(enemy, Route::Path::Line,QPoint(300,400)));
       enemy->addRoute(new Route(enemy, Route::Path::Line,QPoint(600,100)));
-      enemy->addRoute(new Route(enemy, Route::Path::Sin,QPoint(300,700) - 35*i*QPoint(1,0)));
+      enemy->addRoute(new Route(enemy, Route::Path::Sin,QPoint(200,400)));
+      enemy->addRoute(new Route(enemy, Route::Path::Lemniscate));
+      enemy->addRoute(new Route(enemy, Route::Path::Line,QPoint(600,400) - 32*i*QPoint(1,1)));
       enemy->addRoute(new Route(enemy, Route::Path::Stay));
-      enemies.push_back(enemy);
-  }/*
-  for(int i =1; i<10; i++){
-      Enemy* enemy = new Enemy(Enemy::Type::Fly,-i*QPoint(30,30),40+i*2);
-      enemy->addRoute(new Route(Route::Path::Line,-i*QPoint(30,30),QPoint(400-30*i,600)));
-      enemy->addRoute(new Route(Route::Path::Stay,QPoint(400-30*i,600),QPoint(400-30*i,600)));
       enemies.push_back(enemy);
   }
   for(int i =1; i<9; i++){
-       Enemy* enemy = new Enemy(Enemy::Type::Wasp,-i*QPoint(30,30),40+i*2);
-       enemy->addRoute(new Route(Route::Path::Line,-i*QPoint(30,30),QPoint(550-30*i,400-30*i)));
-       enemy->addRoute(new Route(Route::Path::Stay,QPoint(550-30*i,400-30*i),QPoint(550-30*i,400-30*i)));
-       enemies.push_back(enemy);
+      Enemy* enemy = new Enemy(Enemy::Type::Wasp,QPoint(600,800) + 35*i*QPoint(1,1),20);
+      enemy->addRoute(new Route(enemy, Route::Path::Line,QPoint(150,200)));
+      enemy->addRoute(new Route(enemy, Route::Path::Sin,QPoint(250,300)));
+      enemy->addRoute(new Route(enemy, Route::Path::Lemniscate));
+      enemy->addRoute(new Route(enemy, Route::Path::Line,QPoint(300,100) + 32*i*QPoint(-1,1)));
+      enemy->addRoute(new Route(enemy, Route::Path::Stay));
+      enemies.push_back(enemy);
   }
-*/
-/*
-  for(int i =1; i<10; i++){
-       Enemy* enemy = new Enemy(Enemy::Type::Lobster,QPoint(500,0)-i*QPoint(0,32),70+i*4);
-       enemy->addRoute(new Route(static_cast<GameObject*>(enemy),Route::Path::Line,QPoint(300,100)));
-       enemy->addRoute(new Route(static_cast<GameObject*>(enemy),Route::Path::Sin,QPoint(300,500)));
-       enemy->addRoute(new Route(static_cast<GameObject*>(enemy),Route::Path::Lemniscate));
-       enemy->addRoute(new Route(static_cast<GameObject*>(enemy),Route::Path::Sin,QPoint(100,100)));
-       enemy->addRoute(new Route(static_cast<GameObject*>(enemy),Route::Path::Lemniscate));
-       enemy->addRoute(new Route(static_cast<GameObject*>(enemy),Route::Path::Stay));
-       enemies.push_back(enemy);
+  for(int i =1; i<12; i++){
+      Enemy* enemy = new Enemy(Enemy::Type::Lobster,QPoint(-400,1600) - 35*i*QPoint(-1,1),20);
+      enemy->addRoute(new Route(enemy, Route::Path::Line,QPoint(600,-50)));
+      enemy->addRoute(new Route(enemy, Route::Path::Lemniscate));
+      enemy->addRoute(new Route(enemy, Route::Path::Sin,QPoint(550,400) + 35*i*QPoint(-1,0)));
+      enemy->addRoute(new Route(enemy, Route::Path::Stay));
+      enemies.push_back(enemy);
   }
-  */
-/*
-  for(int i =1; i<2; i++){
-       Enemy* enemy = new Enemy(Enemy::Type::Wasp,-i*QPoint(20,20),70-i*4);
-       enemy->addRoute(new Route(static_cast<GameObject*>(enemy),Route::Path::Line,QPoint(300,300)));
-       enemy->addRoute(new Route(static_cast<GameObject*>(enemy),Route::Path::Lemniscate));
-       enemy->addRoute(new Route(static_cast<GameObject*>(enemy),Route::Path::Line,QPoint(300-32*i,100)));
-       enemy->addRoute(new Route(static_cast<GameObject*>(enemy),Route::Path::Stay));
-       enemies.push_back(enemy);
-  }
-  */
+
 }
 
 Game::~Game()

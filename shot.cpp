@@ -10,5 +10,5 @@ Shot::Shot(QRect rect):GameObject()
 
 void Shot::move()
 {
-  rect.moveTop(rect.y() - speed);
+  rect.moveTop(rect.y() - qRound(speed));
 }

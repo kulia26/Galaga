@@ -30,7 +30,6 @@ Route::Route(class GameObject* object, Path path)
   this->parent = object;
   this->path =path;
   this->start = QPoint(object->getRect().x(),object->getRect().y());
-  //this->end =QPoint(object->getRect().x(),object->getRect().y());
   this->position.setX(object->getRect().x());
   this->position.setX(object->getRect().y());
   this->path =path;
@@ -53,7 +52,6 @@ void Route::setStart(){
 QPoint Route::getNextPoint(double speed){
   if(QRect(end - QPoint(5,5),end+QPoint(5,5)).contains(position)){
       theEnd = true;
-      std::cout <<"theEnd = true"<<std::endl;
       return end;
     }
   if(path == Path::Left){
@@ -92,15 +90,12 @@ QPoint Route::getNextPoint(double speed){
         }
       dx = speed*(end.x() - start.x())/length+ 4*cos(t);
       dy = speed*(end.y() - start.y())/length + 4*sin(t)*sin(t);
-
-
-
     }
   if(path == Path::Lemniscate){
-      q = q + 0.05*speed/60;
+      q = q + 0.05;
       double t = q;
-      dx =  10*sqrt(2)*cos(t);
-      dy =  20*sqrt(2)*cos(t)*sin(t);
+      dx =  speed/2*sqrt(2)*cos(t);
+      dy =  speed*sqrt(2)*cos(t)*sin(t);
       if(q > M_PI/2 and  q < M_PI){
           dy = -dy;
         }

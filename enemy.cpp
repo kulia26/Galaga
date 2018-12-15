@@ -30,6 +30,10 @@ Enemy::Enemy():GameObject()
   gameObjectType = GameObject::Type::Enemy;
 }
 
+QPoint* Enemy::getPosition(){
+  return new QPoint(getRect().x(),getRect().y());
+}
+
 void Enemy::makeFramesFromPixmap(){
   frames.clear();
   for(int i=0; i<9;i++){
@@ -55,6 +59,7 @@ void Enemy::move()
       int i = routes.indexOf(currentRoute);
       if((i+1)!=routes.length()){
           currentRoute = routes[i+1];
+          currentRoute->setStart();
         }
     }
 }

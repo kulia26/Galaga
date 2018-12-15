@@ -17,6 +17,7 @@ public:
   void animate(Animation type) final override;
   void makeFramesFromPixmap() final override;
   void fire();
+  QPoint* getPosition();
 
   void read(const QJsonObject &json) final override;
   void write(QJsonObject &json) const final override;

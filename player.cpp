@@ -13,10 +13,10 @@ gameObjectType = GameObject::Type::Player;
 setPixmap(":/images/images/sprites.png");
 pixmap = pixmap.copy(QRect(172,35,9,10));
 rect  = QRect(268,700,48,48);
-routes.push_back(new Route(Route::Path::None));
-routes.push_back(new Route(Route::Path::Left));
-routes.push_back(new Route(Route::Path::Right));
-currentRoute = routes.first();
+routes.push_back(new Route(this, Route::Path::None));
+routes.push_back(new Route(this, Route::Path::Left));
+routes.push_back(new Route(this, Route::Path::Right));
+setCurrentRoute(Route::Path::None);
 speed = 10;
 fireGun = false;
 makeFramesFromPixmap();
@@ -25,18 +25,21 @@ makeFramesFromPixmap();
 void Player::setCurrentRoute(Route::Path route){
   if(route == Route::Path::None){
       currentRoute = routes[0];
+      currentRoute->setStart();
     }
   if(route == Route::Path::Left){
       currentRoute = routes[1];
+      currentRoute->setStart();
     }
   if(route == Route::Path::Right){
       currentRoute = routes[2];
+      currentRoute->setStart();
     }
 }
 
 void Player::move()
 {
-  rect.moveTo(currentRoute->getNextPoint(speed, QPoint(rect.x(),rect.y())));
+  rect.moveTo(currentRoute->getNextPoint(speed));
 }
 
 void Player::makeFramesFromPixmap(){

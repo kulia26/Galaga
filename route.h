@@ -10,15 +10,14 @@ public:
   enum class Path {Line, Stay, Left, Right, Bottom, None, Lemniscate, Sin};
 
   explicit Route();
-  explicit Route(Route::Path path, QPoint start, QPoint end);
-  explicit Route(Route::Path path);
-  explicit Route(Route::Path path, QPoint position);
+  explicit Route(class GameObject* object, Route::Path path, QPoint end);
+  explicit Route(class GameObject* object,Route::Path path);
   virtual ~Route();
 
   QPoint getNextPoint(double speed);
-  QPoint getNextPoint(double speed,QPoint position);
   Route::Path getRoutePath();
   bool isEnded();
+  void setStart();
 
   void read(const QJsonObject &json);
   void write(QJsonObject &json) const;
@@ -31,7 +30,8 @@ private:
   double dx;
   double dy;
   double q;
-  bool theEnd;
+  bool theEnd = false;
+  class GameObject* parent;
 };
 
 #endif // ROUTE_H

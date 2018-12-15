@@ -90,8 +90,8 @@ void GameObject::setPixmap(QString path)
 void GameObject::addRoute(Route* route)
 {
   routes.push_back(route);
-  if(routes[0]==route){
-      currentRoute = routes[0];
+  if(routes.first()==route){
+      currentRoute = routes.first();
     }
 
 }

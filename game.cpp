@@ -36,13 +36,15 @@ Game::Game(QWidget *parent) :
 void Game::newGame()
 {
   player = new Player();
-/*
+
   for(int i =1; i<9; i++){
-      Enemy* enemy = new Enemy(Enemy::Type::Lobster,-i*QPoint(30,30),40+i*2);
-      enemy->addRoute(new Route(Route::Path::Line,-i*QPoint(30,30),QPoint(30*i,400-30*i)));
-      enemy->addRoute(new Route(Route::Path::Stay,QPoint(30*i,400-30*i),QPoint(30*i,400-30*i)));
+      Enemy* enemy = new Enemy(Enemy::Type::Fly,QPoint(50,50) - 35*i*QPoint(1,1),20);
+      enemy->addRoute(new Route(enemy, Route::Path::Line,QPoint(300,400)));
+      enemy->addRoute(new Route(enemy, Route::Path::Line,QPoint(600,100)));
+      enemy->addRoute(new Route(enemy, Route::Path::Sin,QPoint(300,700) - 35*i*QPoint(1,0)));
+      enemy->addRoute(new Route(enemy, Route::Path::Stay));
       enemies.push_back(enemy);
-  }
+  }/*
   for(int i =1; i<10; i++){
       Enemy* enemy = new Enemy(Enemy::Type::Fly,-i*QPoint(30,30),40+i*2);
       enemy->addRoute(new Route(Route::Path::Line,-i*QPoint(30,30),QPoint(400-30*i,600)));
@@ -56,14 +58,28 @@ void Game::newGame()
        enemies.push_back(enemy);
   }
 */
-  for(int i =1; i<2; i++){
-       Enemy* enemy = new Enemy(Enemy::Type::Wasp,-i*QPoint(20,20),70-i*4);
-       enemy->addRoute(new Route(Route::Path::Line,-i*QPoint(32,32),QPoint(300,300)));
-       enemy->addRoute(new Route(Route::Path::Lemniscate, QPoint(300,300)));
-       enemy->addRoute(new Route(Route::Path::Line,QPoint(300,300),QPoint(300-32*i,100)));
-       enemy->addRoute(new Route(Route::Path::Stay,QPoint(300-32*i,100),QPoint(300-32*i,100)));
+/*
+  for(int i =1; i<10; i++){
+       Enemy* enemy = new Enemy(Enemy::Type::Lobster,QPoint(500,0)-i*QPoint(0,32),70+i*4);
+       enemy->addRoute(new Route(static_cast<GameObject*>(enemy),Route::Path::Line,QPoint(300,100)));
+       enemy->addRoute(new Route(static_cast<GameObject*>(enemy),Route::Path::Sin,QPoint(300,500)));
+       enemy->addRoute(new Route(static_cast<GameObject*>(enemy),Route::Path::Lemniscate));
+       enemy->addRoute(new Route(static_cast<GameObject*>(enemy),Route::Path::Sin,QPoint(100,100)));
+       enemy->addRoute(new Route(static_cast<GameObject*>(enemy),Route::Path::Lemniscate));
+       enemy->addRoute(new Route(static_cast<GameObject*>(enemy),Route::Path::Stay));
        enemies.push_back(enemy);
   }
+  */
+/*
+  for(int i =1; i<2; i++){
+       Enemy* enemy = new Enemy(Enemy::Type::Wasp,-i*QPoint(20,20),70-i*4);
+       enemy->addRoute(new Route(static_cast<GameObject*>(enemy),Route::Path::Line,QPoint(300,300)));
+       enemy->addRoute(new Route(static_cast<GameObject*>(enemy),Route::Path::Lemniscate));
+       enemy->addRoute(new Route(static_cast<GameObject*>(enemy),Route::Path::Line,QPoint(300-32*i,100)));
+       enemy->addRoute(new Route(static_cast<GameObject*>(enemy),Route::Path::Stay));
+       enemies.push_back(enemy);
+  }
+  */
 }
 
 Game::~Game()
@@ -188,13 +204,13 @@ void Game::paintEvent(QPaintEvent *event)
       player->getShots()[i]->move();
   }
   //move player
-  player->move();
   //fire if player is firegun
   if(player->isFireGun()){
       player->fire();
   }
   //draw player
   painter.drawPixmap(player->getRect(),player->getPixmap());
+  player->move();
   //draw enemies
   for(int i = 0; i < enemies.length(); i++){
       painter.drawPixmap(enemies[i]->getRect(),enemies[i]->getFrame());

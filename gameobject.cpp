@@ -25,6 +25,25 @@ void GameObject::fire(){
 
 }
 
+bool GameObject::collide(std::shared_ptr<GameObject> object){
+  if(QRect(this->getRect() & object->getRect()).size() != QSize(0,0)){
+      return true;
+    }
+  return false;
+}
+
+bool GameObject::collide(GameObject* object){
+  if(QRect(this->getRect() & object->getRect()).size() != QSize(0,0)){
+      return true;
+    }
+  return false;
+}
+
+void GameObject::draw(std::shared_ptr<QPainter> painter)
+{
+  painter->drawPixmap(this->getRect(),this->getPixmap());
+}
+
 void GameObject::read(const QJsonObject &json)
 {
 

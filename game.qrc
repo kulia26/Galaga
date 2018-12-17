@@ -20,5 +20,6 @@
         <file>images/FlySprites.png</file>
         <file>images/WaspSprites.png</file>
         <file>images/ExplosionSprites.png</file>
+        <file>images/emulogic.ttf</file>
     </qresource>
 </RCC>

@@ -14,8 +14,10 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QRandomGenerator>
+#include <QFontDatabase>
 
 #include <memory>
+static int SCORES;
 
 Game::Game(QWidget *parent) :
   QWidget(parent),
@@ -30,7 +32,12 @@ Game::Game(QWidget *parent) :
     std::shared_ptr<SkyStar> star(new SkyStar());
     sky.push_back(star);
   }
+
   player = new Player();
+
+  int id = QFontDatabase::addApplicationFont(":/images/images/emulogic.ttf");
+  QString family = QFontDatabase::applicationFontFamilies(id).at(0);
+  emulogic = QFont(family);
 
   QTimer *timer = new QTimer(this);
   connect(timer, SIGNAL(timeout()), this, SLOT(update()));
@@ -39,8 +46,7 @@ Game::Game(QWidget *parent) :
 
 void Game::newGame()
 {
-
-  //std::shared_ptr<Player> playerOne(new Player);
+  SCORES =  0;
 
   for(int i =1; i<9; i++){
       std::shared_ptr<Enemy> enemy (new Enemy(Enemy::Type::Fly,QPoint(50,50) - 50*i*QPoint(1,1),20));
@@ -172,16 +178,14 @@ void Game::keyReleaseEvent(QKeyEvent *event)
   }
 }
 
-void Game::paintEvent(QPaintEvent *event)
+void Game::paintEvent(QPaintEvent *)
 {
-  QPainter painter(this);
-  painter.setCompositionMode(QPainter::CompositionMode::CompositionMode_DestinationOver);
-  painter.setPen(Qt::PenStyle::NoPen);
+  std::shared_ptr<QPainter> painter (new QPainter(this));
+  painter->setCompositionMode(QPainter::CompositionMode::CompositionMode_DestinationOver);
+  painter->setPen(Qt::PenStyle::NoPen);
   //draw stars
   for(auto star : sky){
-      QBrush brush(star->getColor());
-      painter.setBrush(brush);
-      painter.drawRect(star->getRect());
+      star->draw(painter);
       star->move();
       //remove old stars
       if (star->getShows() > 50){
@@ -192,7 +196,8 @@ void Game::paintEvent(QPaintEvent *event)
     }
   //draw player
   //move player
-  painter.drawPixmap(player->getRect(),player->getPixmap());
+  player->draw(painter);
+
   player->move();
   //fire if player is firegun
   if(player->isFireGun()){
@@ -200,32 +205,40 @@ void Game::paintEvent(QPaintEvent *event)
   }
   //draw player shots
   for(auto shot : player->getShots()){
-      painter.drawPixmap(shot->getRect(),shot->getPixmap());
+      shot->draw(painter);
       shot->move();
     }
   //draw enemies
-  for(auto enemy : enemies){
-      painter.drawPixmap(enemy->getRect(),enemy->getFrame());
+
+for(auto enemy : enemies){
+      enemy->draw(painter);
       enemy->move();
       enemy->fire();
       enemy->attack(player);
 
       for(auto shot : enemy->getShots()){
-          painter.drawPixmap(shot->getRect(),shot->getPixmap());
+          shot->draw(painter);
           shot->move();
       }
+
       for(auto shot : player->getShots()){
-          if(QRect(enemy->getRect() & shot->getRect()).size() != QSize(0,0)){
+          if(enemy->collide(shot)){
               std::shared_ptr<Explosion> newExplosion (new Explosion(QPoint(enemy->getRect().x(),enemy->getRect().y())));
               explosions.push_back(newExplosion);
               enemies.removeOne(enemy);
+              SCORES++;
               player->removeShot(shot);
               break;
             }
       }
-    }
+      if(enemy->collide(player)){
+          std::shared_ptr<Explosion> newExplosion (new Explosion(QPoint(player->getRect().x(),player->getRect().y())));
+          explosions.push_back(newExplosion);
+          enemies.removeOne(enemy);
+        }
+  }
   for(auto explosion : explosions){
-      painter.drawPixmap(explosion->getRect(),explosion->getFrame());
+      explosion->draw(painter);
       if(explosion->getCurrentFrame() != 4){
           explosion->animate(GameObject::Animation::Stay);
         }
@@ -233,6 +246,10 @@ void Game::paintEvent(QPaintEvent *event)
           explosions.removeOne(explosion);
         }
     }
+  painter->setPen(QColor(Qt::red));
+  painter->setBrush(QBrush(Qt::BrushStyle::SolidPattern));
+  painter->setFont(emulogic);
+  painter->drawText(QRect(280,30,200,40),QString::number(SCORES));
 }
 
 

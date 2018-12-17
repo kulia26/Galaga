@@ -19,6 +19,7 @@ public:
   void animate(Animation type) final override;
   void makeFramesFromPixmap() final override;
   void fire() final override;
+  void draw(std::shared_ptr<QPainter> painter) final override;
   void attack(GameObject* player);
   QPoint* getPosition();
 

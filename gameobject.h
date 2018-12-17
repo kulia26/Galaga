@@ -7,6 +7,7 @@
 #include <QPixmap>
 #include "route.h"
 #include <memory>
+#include <QPainter>
 
 class GameObject
 {
@@ -21,6 +22,7 @@ public:
   virtual void animate(Animation type);
   virtual void move();
   virtual void fire();
+  virtual void draw(std::shared_ptr<QPainter> painter);
 
   QPixmap getFrame();
   int getCurrentFrame();
@@ -31,6 +33,8 @@ public:
   void addRoute(Route::Path path, QPoint end);
   void addRoute(Route::Path path);
   int getFramesCount();
+  bool collide(std::shared_ptr<GameObject> object);
+  bool collide(GameObject* object);
 
   virtual void read(const QJsonObject &json);
   virtual void write(QJsonObject &json) const;

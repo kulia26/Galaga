@@ -23,3 +23,8 @@ void Shot::move()
 {
   rect.moveTo(currentRoute->getNextPoint(speed));
 }
+
+void Shot::draw(std::shared_ptr<QPainter> painter)
+{
+  painter->drawPixmap(this->getRect(),this->getPixmap());
+}

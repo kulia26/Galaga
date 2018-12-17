@@ -99,6 +99,11 @@ void Player::animate(Animation type){
   }
 }
 
+void Player::draw(std::shared_ptr<QPainter> painter)
+{
+  painter->drawPixmap(this->getRect(),this->getPixmap());
+}
+
 void Player::read(const QJsonObject &json)
 {
   GameObject::read(json);

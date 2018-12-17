@@ -131,6 +131,11 @@ void Enemy::animate(Animation type){
   }
 }
 
+void Enemy::draw(std::shared_ptr<QPainter> painter)
+{
+  painter->drawPixmap(this->getRect(),this->getFrame());
+}
+
 void Enemy::read(const QJsonObject &json)
 {
     GameObject::read(json);

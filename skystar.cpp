@@ -1,5 +1,6 @@
 ﻿#include "skystar.h"
 #include <QRandomGenerator>
+#include <QPainter>
 
 SkyStar::SkyStar():GameObject ()
 {
@@ -30,5 +31,12 @@ int SkyStar::getShows()
 QColor SkyStar::getColor()
 {
    return color;
+}
+
+void SkyStar::draw(std::shared_ptr<QPainter> painter)
+{
+  QBrush brush(this->getColor());
+  painter->setBrush(brush);
+  painter->drawRect(this->getRect());
 }
 

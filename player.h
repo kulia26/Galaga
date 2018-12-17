@@ -16,6 +16,7 @@ public:
   void fire() final override;
   void animate(Animation type) final override;
   void makeFramesFromPixmap() final override;
+  void draw(std::shared_ptr<QPainter> painter) final override;
   void makeFireGun(bool);
   bool isFireGun();
   void removeShot(std::shared_ptr<Shot> shot);

@@ -7,6 +7,7 @@
 #include <QRandomGenerator>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <memory>
 
 Enemy::Enemy(Enemy::Type type, QPoint start,double speed):GameObject()
 {
@@ -24,10 +25,17 @@ Enemy::Enemy(Enemy::Type type, QPoint start,double speed):GameObject()
   }
   makeFramesFromPixmap();
   rect  = QRect(start.x(),start.y(),frame->width()*3,frame->height()*3);
+  canAttack = true;
 }
-Enemy::Enemy():GameObject()
+
+Enemy::Enemy()
 {
-  gameObjectType = GameObject::Type::Enemy;
+ gameObjectType = GameObject::Type::Enemy;
+}
+
+Enemy::~Enemy()
+{
+ std::cout << "destruct enemy"<< std::endl;
 }
 
 QPoint* Enemy::getPosition(){
@@ -54,6 +62,12 @@ void Enemy::move()
     }
   if(currentRoute->getRoutePath()==Route::Path::Stay){
       animate(Animation::Stay);
+      if(currentRoute != routes.last()){
+         currentRoute->setTheEnd(true);
+        }
+      if(currentRoute == routes.last()){
+         currentRoute->setTheEnd(false);
+        }
     }
   if(currentRoute->isEnded()){
       int i = routes.indexOf(currentRoute);
@@ -61,6 +75,36 @@ void Enemy::move()
           currentRoute = routes[i+1];
           currentRoute->setStart();
         }
+    }
+}
+
+void Enemy::fire()
+{
+  if(framesCount%QRandomGenerator::global()->bounded(60,120) == 0 && currentRoute->getRoutePath() == Route::Path::Stay){
+      if(shots.length() > 0){
+          std::shared_ptr<Shot> newShot(new class Shot(QRect(rect.x()+15,rect.y()+15,6,12), Route::Path::Bottom));
+          shots.push_back(newShot);
+          for (int i = 1; i < shots.length(); i++){
+              if (shots[i]->getRect().top() < 0){
+                  shots.remove(i);
+              }
+          }
+        }
+      else{
+          std::shared_ptr<Shot> newShot(new class Shot(QRect(rect.x()+15,rect.y()+15,6,12), Route::Path::Bottom));
+          shots.push_back(newShot);
+        }
+    }
+}
+
+void Enemy::attack(GameObject* player){
+  if(framesCount == QRandomGenerator::global()->bounded(150, 250) && canAttack){
+      std::cout << "attack" << std::endl;
+      addRoute(Route::Path::Sin, player->getRect().topLeft());
+      addRoute(Route::Path::Lemniscate);
+      addRoute(Route::Path::Sin, this->getRect().topLeft());
+      addRoute(Route::Path::Stay);
+      canAttack = false;
     }
 }
 
@@ -82,7 +126,7 @@ void Enemy::animate(Animation type){
         }
   }
   framesCount++;
-  if(framesCount > 1000){
+  if(framesCount > 10000){
       framesCount = 0;
   }
 }

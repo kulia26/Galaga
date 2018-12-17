@@ -11,20 +11,19 @@ class Player : public GameObject
 {
 public:
   explicit Player();
+  virtual ~Player() override;
   void move() final override;
-  void fire();
+  void fire() final override;
   void animate(Animation type) final override;
   void makeFramesFromPixmap() final override;
-  QVector<class Shot*> getShots();
   void makeFireGun(bool);
   bool isFireGun();
-  void removeShot(int i);
+  void removeShot(std::shared_ptr<Shot> shot);
   void setCurrentRoute(Route::Path route);
   void read(const QJsonObject &json) final override;
   void write(QJsonObject &json) const final override;
 private:
   bool fireGun;
-  QVector<class Shot*> shots;
 };
 
 #endif // PLAYER_H

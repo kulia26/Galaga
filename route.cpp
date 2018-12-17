@@ -29,13 +29,17 @@ Route::Route(class GameObject* object, Path path)
 {
   this->parent = object;
   this->path =path;
-  this->start = QPoint(object->getRect().x(),object->getRect().y());
-  this->position.setX(object->getRect().x());
-  this->position.setX(object->getRect().y());
+  this->start = QPoint(parent->getRect().x(),parent->getRect().y());
+  this->position.setX(parent->getRect().x());
+  this->position.setX(parent->getRect().y());
   this->path =path;
   theEnd = false;
 }
 
+void Route::setParent(class GameObject* object)
+{
+  this->parent = object;
+}
 
 Route::Path Route::getRoutePath(){
   return path;
@@ -65,6 +69,14 @@ QPoint Route::getNextPoint(double speed){
   if(path == Path::None){
       dx = 0;
       dy = 0;
+    }
+  if(path == Path::Top){
+      dx = 0;
+      dy = -speed;
+    }
+  if(path == Path::Bottom){
+      dx = 0;
+      dy = speed;
     }
   if(path== Path::Line){
     double length = sqrt((end.x() - start.x())*(end.x() - start.x())+(end.y() - start.y())*(end.y() - start.y()));
@@ -117,6 +129,10 @@ QPoint Route::getNextPoint(double speed){
 
 bool Route::isEnded(){
   return theEnd;
+}
+
+void Route::setTheEnd(bool tf){
+  theEnd = tf;
 }
 
 void Route::read(const QJsonObject &json)

@@ -4,7 +4,7 @@
 SkyStar::SkyStar():GameObject ()
 {
   int size  = QRandomGenerator::global()->bounded(1,3);
-  speed = QRandomGenerator::global()->bounded(1,5);
+  speed = QRandomGenerator::global()->bounded(1,6);
   color = QColor(QRandomGenerator::global()->bounded(0,255),QRandomGenerator::global()->bounded(0,255),QRandomGenerator::global()->bounded(0,255),QRandomGenerator::global()->bounded(0,255));
   rect = QRect(QRandomGenerator::global()->bounded(0,600),QRandomGenerator::global()->bounded(-120,700),size,size);
   if(rect.top() < 0){

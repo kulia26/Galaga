@@ -7,6 +7,7 @@
 #include "player.h"
 #include "enemy.h"
 #include "explosion.h"
+#include <memory>
 namespace Ui {
   class Game;
 }
@@ -17,9 +18,10 @@ class Game : public QWidget
 private:
   Ui::Game *ui;
   Player* player;
-  QVector<SkyStar*> sky;
-  QVector<Enemy*> enemies;
-  QVector<Explosion*> explosions;
+  //Player* player;
+  QVector<std::shared_ptr<SkyStar>> sky;
+  QVector<std::shared_ptr<Enemy>> enemies;
+  QVector<std::shared_ptr<Explosion>> explosions;
 public:
   explicit Game(QWidget *parent = nullptr);
   void paintEvent(QPaintEvent *event);

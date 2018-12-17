@@ -10,7 +10,7 @@ GameObject::GameObject()
 
 GameObject::~GameObject()
 {
-
+  //std::cout << "destruct"<< std::endl;
 }
 
 void GameObject::animate(Animation type){
@@ -18,6 +18,10 @@ void GameObject::animate(Animation type){
 }
 
 void GameObject::move(){
+
+}
+
+void GameObject::fire(){
 
 }
 
@@ -76,6 +80,10 @@ int GameObject::getCurrentFrame(){
   return frames.indexOf(frame);
 }
 
+int GameObject::getFramesCount(){
+  return framesCount;
+}
+
 QPixmap GameObject::getPixmap()
 {
   return pixmap;
@@ -87,13 +95,28 @@ void GameObject::setPixmap(QString path)
   this->imagePath = path;
 }
 
-void GameObject::addRoute(Route* route)
+QVector<std::shared_ptr<Shot>> GameObject::getShots()
 {
+  return shots;
+}
+
+void GameObject::addRoute(Route::Path path, QPoint end)
+{
+  Route* route = new Route(this, path, end);
+  route->setParent(this);
   routes.push_back(route);
   if(routes.first()==route){
       currentRoute = routes.first();
     }
+}
 
+void GameObject::addRoute(Route::Path path)
+{
+  Route* route = new Route(this, path);
+  routes.push_back(route);
+  if(routes.first()==route){
+      currentRoute = routes.first();
+    }
 }
 
 

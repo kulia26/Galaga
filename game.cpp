@@ -13,6 +13,9 @@
 #include <QPoint>
 #include <QJsonArray>
 #include <QJsonDocument>
+#include <QRandomGenerator>
+
+#include <memory>
 
 Game::Game(QWidget *parent) :
   QWidget(parent),
@@ -24,9 +27,10 @@ Game::Game(QWidget *parent) :
   this->setWindowTitle("Galaga");
 
   for(int i = 0; i < 500; i++){
-    sky.push_back(new SkyStar);
+    std::shared_ptr<SkyStar> star(new SkyStar());
+    sky.push_back(star);
   }
-
+  player = new Player();
 
   QTimer *timer = new QTimer(this);
   connect(timer, SIGNAL(timeout()), this, SLOT(update()));
@@ -35,36 +39,37 @@ Game::Game(QWidget *parent) :
 
 void Game::newGame()
 {
-  player = new Player();
+
+  //std::shared_ptr<Player> playerOne(new Player);
 
   for(int i =1; i<9; i++){
-      Enemy* enemy = new Enemy(Enemy::Type::Fly,QPoint(50,50) - 35*i*QPoint(1,1),20);
-      enemy->addRoute(new Route(enemy, Route::Path::Line,QPoint(300,400)));
-      enemy->addRoute(new Route(enemy, Route::Path::Line,QPoint(600,100)));
-      enemy->addRoute(new Route(enemy, Route::Path::Sin,QPoint(200,400)));
-      enemy->addRoute(new Route(enemy, Route::Path::Lemniscate));
-      enemy->addRoute(new Route(enemy, Route::Path::Line,QPoint(600,400) - 32*i*QPoint(1,1)));
-      enemy->addRoute(new Route(enemy, Route::Path::Stay));
+      std::shared_ptr<Enemy> enemy (new Enemy(Enemy::Type::Fly,QPoint(50,50) - 50*i*QPoint(1,1),20));
+      enemy->addRoute(Route::Path::Line,QPoint(300,400));
+      enemy->addRoute(Route::Path::Line,QPoint(600,100));
+      enemy->addRoute(Route::Path::Sin,QPoint(200,400));
+      enemy->addRoute(Route::Path::Lemniscate);
+      enemy->addRoute(Route::Path::Line,QPoint(600,400) + 33*i*QPoint(-1,-1));
+      enemy->addRoute(Route::Path::Stay);
       enemies.push_back(enemy);
   }
+
   for(int i =1; i<9; i++){
-      Enemy* enemy = new Enemy(Enemy::Type::Wasp,QPoint(600,800) + 35*i*QPoint(1,1),20);
-      enemy->addRoute(new Route(enemy, Route::Path::Line,QPoint(150,200)));
-      enemy->addRoute(new Route(enemy, Route::Path::Sin,QPoint(250,300)));
-      enemy->addRoute(new Route(enemy, Route::Path::Lemniscate));
-      enemy->addRoute(new Route(enemy, Route::Path::Line,QPoint(300,100) + 32*i*QPoint(-1,1)));
-      enemy->addRoute(new Route(enemy, Route::Path::Stay));
+      std::shared_ptr<Enemy> enemy (new Enemy(Enemy::Type::Wasp,QPoint(600,800) + 70*i*QPoint(1,1),20));
+      enemy->addRoute(Route::Path::Line,QPoint(150,200));
+      enemy->addRoute(Route::Path::Sin,QPoint(250,300));
+      enemy->addRoute(Route::Path::Lemniscate);
+      enemy->addRoute(Route::Path::Line,QPoint(300,100) + 33*i*QPoint(-1,1));
+      enemy->addRoute(Route::Path::Stay);
       enemies.push_back(enemy);
   }
   for(int i =1; i<12; i++){
-      Enemy* enemy = new Enemy(Enemy::Type::Lobster,QPoint(-400,1600) - 35*i*QPoint(-1,1),20);
-      enemy->addRoute(new Route(enemy, Route::Path::Line,QPoint(600,-50)));
-      enemy->addRoute(new Route(enemy, Route::Path::Lemniscate));
-      enemy->addRoute(new Route(enemy, Route::Path::Sin,QPoint(550,400) + 35*i*QPoint(-1,0)));
-      enemy->addRoute(new Route(enemy, Route::Path::Stay));
+      std::shared_ptr<Enemy> enemy (new Enemy(Enemy::Type::Lobster,QPoint(-800,1600) - 70*i*QPoint(-1,1),20));
+      enemy->addRoute(Route::Path::Line,QPoint(600,-50));
+      enemy->addRoute(Route::Path::Lemniscate);
+      enemy->addRoute(Route::Path::Sin,QPoint(550,400) + 42*i*QPoint(-1,0));
+      enemy->addRoute(Route::Path::Stay);
       enemies.push_back(enemy);
   }
-
 }
 
 Game::~Game()
@@ -74,7 +79,7 @@ Game::~Game()
 
 void Game::read(const QJsonObject &json)
 {
-    player = new Player();
+    //player = new Player();
     std::cout <<"Game::read"<<std::endl;
     player->read(json["player"].toObject());
     std::cout <<"Game::read2"<<std::endl;
@@ -83,7 +88,7 @@ void Game::read(const QJsonObject &json)
     for (int enemyIndex = 0; enemyIndex < enemiesArray.size(); ++enemyIndex) {
         std::cout <<enemyIndex<<std::endl;
         QJsonObject enemyObject = enemiesArray[enemyIndex].toObject();
-        enemies.insert(enemyIndex,new Enemy());
+        //enemies.insert(enemyIndex,new Enemy());
         enemies[enemyIndex]->read(enemyObject);
     }
 }
@@ -95,12 +100,12 @@ void Game::write(QJsonObject &json) const
     json["player"] = playerObject;
 
     QJsonArray enemiesArray;
-    foreach (const Enemy* enemy, enemies) {
+    /*foreach (const Enemy* enemy, enemies) {
         QJsonObject enemyObject;
         enemy->write(enemyObject);
         enemiesArray.append(enemyObject);
     }
-    json["enemies"] = enemiesArray;
+    json["enemies"] = enemiesArray;*/
 }
 
 bool Game::loadGame()
@@ -170,55 +175,64 @@ void Game::keyReleaseEvent(QKeyEvent *event)
 void Game::paintEvent(QPaintEvent *event)
 {
   QPainter painter(this);
+  painter.setCompositionMode(QPainter::CompositionMode::CompositionMode_DestinationOver);
   painter.setPen(Qt::PenStyle::NoPen);
   //draw stars
-  for(int i = 0; i < sky.size(); i++){
-      QBrush brush(sky[i]->getColor());
+  for(auto star : sky){
+      QBrush brush(star->getColor());
       painter.setBrush(brush);
-      painter.drawRect(sky[i]->getRect());
-      sky[i]->move();
+      painter.drawRect(star->getRect());
+      star->move();
       //remove old stars
-      if (sky[i]->getShows() > 50){
-         sky.remove(i);
-         sky.push_back(new SkyStar());
+      if (star->getShows() > 50){
+         sky.removeOne(star);
+         std::shared_ptr<SkyStar> newStar (new SkyStar());
+         sky.push_back(newStar);
       }
-  }
-  //draw shots
-  for(int i = 0; i < player->getShots().length(); i++){
-      painter.drawPixmap(player->getShots()[i]->getRect(),player->getShots()[i]->getPixmap());
-      player->getShots()[i]->move();
-  }
+    }
+  //draw player
   //move player
+  painter.drawPixmap(player->getRect(),player->getPixmap());
+  player->move();
   //fire if player is firegun
   if(player->isFireGun()){
       player->fire();
   }
-  //draw player
-  painter.drawPixmap(player->getRect(),player->getPixmap());
-  player->move();
+  //draw player shots
+  for(auto shot : player->getShots()){
+      painter.drawPixmap(shot->getRect(),shot->getPixmap());
+      shot->move();
+    }
   //draw enemies
-  for(int i = 0; i < enemies.length(); i++){
-      painter.drawPixmap(enemies[i]->getRect(),enemies[i]->getFrame());
-      enemies[i]->move();
-      //проверяем на коллизии shots и enemies
-      for(int j = 0; j < player->getShots().length(); j++){
-          if(QRect(enemies[i]->getRect() & player->getShots()[j]->getRect()).size() != QSize(0,0)){
-              explosions.push_back(new Explosion(QPoint(enemies[i]->getRect().x(),enemies[i]->getRect().y())));
-              enemies.remove(i);
-              player->removeShot(j);
+  for(auto enemy : enemies){
+      painter.drawPixmap(enemy->getRect(),enemy->getFrame());
+      enemy->move();
+      enemy->fire();
+      enemy->attack(player);
+
+      for(auto shot : enemy->getShots()){
+          painter.drawPixmap(shot->getRect(),shot->getPixmap());
+          shot->move();
+      }
+      for(auto shot : player->getShots()){
+          if(QRect(enemy->getRect() & shot->getRect()).size() != QSize(0,0)){
+              std::shared_ptr<Explosion> newExplosion (new Explosion(QPoint(enemy->getRect().x(),enemy->getRect().y())));
+              explosions.push_back(newExplosion);
+              enemies.removeOne(enemy);
+              player->removeShot(shot);
               break;
             }
       }
-  }
-  for(int i = 0; i < explosions.length(); i++){
-      painter.drawPixmap(explosions[i]->getRect(),explosions[i]->getFrame());
-      if(explosions[i]->getCurrentFrame() != 4){
-          explosions[i]->animate(GameObject::Animation::Stay);
+    }
+  for(auto explosion : explosions){
+      painter.drawPixmap(explosion->getRect(),explosion->getFrame());
+      if(explosion->getCurrentFrame() != 4){
+          explosion->animate(GameObject::Animation::Stay);
         }
       else{
-          explosions.remove(i);
+          explosions.removeOne(explosion);
         }
-  }
+    }
 }
 
 

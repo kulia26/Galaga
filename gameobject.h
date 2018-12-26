@@ -1,5 +1,4 @@
-﻿
-#ifndef GAMEOBJECT_H
+﻿#ifndef GAMEOBJECT_H
 #define GAMEOBJECT_H
 
 #include <QObject>
@@ -8,6 +7,7 @@
 #include "route.h"
 #include <memory>
 #include <QPainter>
+
 
 class GameObject
 {
@@ -40,16 +40,17 @@ public:
   virtual void write(QJsonObject &json) const;
 
 protected:
-  QRect rect;
   double speed;
   GameObject::Type gameObjectType;
-  QPixmap* frame;
+  QRect rect;
   QPixmap pixmap;
-  int framesCount;
+  QPixmap* frame;
   QVector<QPixmap*> frames;
+  int framesCount;
   Route* currentRoute;
   QVector<Route*> routes;
   QVector<std::shared_ptr<Shot>> shots;
+
 private:
   QString imagePath;
 };

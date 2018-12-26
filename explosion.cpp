@@ -16,7 +16,9 @@ Explosion::~Explosion()
 
 void Explosion::animate(Animation type){
   if(framesCount % 1 == 0){
-      frame = frames[frames.indexOf(frame)+1];
+      if(frames.indexOf(frame) != 4){
+          frame = frames[frames.indexOf(frame)+1];
+        }
   }
   if(framesCount > 1000){
       framesCount = 0;
@@ -26,7 +28,6 @@ void Explosion::animate(Animation type){
 
 
 void Explosion::makeFramesFromPixmap(){
-  frames.clear();
   for(int i=0; i<5;i++){
       frames.push_back(new QPixmap(pixmap.copy(30*i,0,30,24)));
     }

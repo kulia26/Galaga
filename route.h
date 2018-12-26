@@ -17,7 +17,7 @@ public:
   QPoint getNextPoint(double speed);
   Route::Path getRoutePath();
   bool isEnded();
-  void setTheEnd(bool );
+  void setTheEnd(bool);
   void setStart();
   void setParent(class GameObject* object);
 

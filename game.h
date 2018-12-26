@@ -17,9 +17,9 @@ class Game : public QWidget
   Q_OBJECT
 private:
   Ui::Game *ui;
+  QTimer *timer;
   QFont emulogic;
   Player* player;
-  //Player* player;
   QVector<std::shared_ptr<SkyStar>> sky;
   QVector<std::shared_ptr<Enemy>> enemies;
   QVector<std::shared_ptr<Explosion>> explosions;

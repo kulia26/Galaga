@@ -82,7 +82,7 @@ void Enemy::fire()
 {
   if(framesCount%QRandomGenerator::global()->bounded(60,120) == 0 && currentRoute->getRoutePath() == Route::Path::Stay){
       if(shots.length() > 0){
-          std::shared_ptr<Shot> newShot(new class Shot(QRect(rect.x()+15,rect.y()+15,6,12), Route::Path::Bottom));
+          std::shared_ptr<Shot> newShot(new class Shot(QRect(rect.x()+10,rect.y()+15,6,12), Route::Path::Bottom));
           shots.push_back(newShot);
           for (int i = 1; i < shots.length(); i++){
               if (shots[i]->getRect().top() < 0){
@@ -91,7 +91,7 @@ void Enemy::fire()
           }
         }
       else{
-          std::shared_ptr<Shot> newShot(new class Shot(QRect(rect.x()+15,rect.y()+15,6,12), Route::Path::Bottom));
+          std::shared_ptr<Shot> newShot(new class Shot(QRect(rect.x()+10,rect.y()+15,6,12), Route::Path::Bottom));
           shots.push_back(newShot);
         }
     }

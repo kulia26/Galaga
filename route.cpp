@@ -30,6 +30,7 @@ Route::Route(class GameObject* object, Path path)
   this->parent = object;
   this->path =path;
   this->start = QPoint(parent->getRect().x(),parent->getRect().y());
+  this->end = QPoint(-100,-100);
   this->position.setX(parent->getRect().x());
   this->position.setX(parent->getRect().y());
   this->path =path;
@@ -54,7 +55,7 @@ void Route::setStart(){
 
 
 QPoint Route::getNextPoint(double speed){
-  if(QRect(end - QPoint(5,5),end+QPoint(5,5)).contains(position)){
+  if(QRect(end - QPoint(10,10),end+QPoint(10,10)).contains(position)){
       theEnd = true;
       return end;
     }
@@ -121,7 +122,6 @@ QPoint Route::getNextPoint(double speed){
           return position;
         }
     }
-
   position = QPoint(position.x()+qRound(dx),position.y()+qRound(dy));
   return position;
 }

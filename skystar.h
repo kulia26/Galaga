@@ -13,8 +13,6 @@ public:
   int getShows();
   QColor getColor();
   void draw(std::shared_ptr<QPainter> painter) final override;
-protected:
-  int shows;
 private:
   QColor color;
 };

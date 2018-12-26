@@ -9,7 +9,7 @@ class Explosion : public GameObject
 {
 public:
   explicit Explosion(QPoint point);
-  virtual ~Explosion();
+  virtual ~Explosion() override;
   void animate(Animation type) final override;
   void makeFramesFromPixmap() final override;
   void draw(std::shared_ptr<QPainter> painter) final override;

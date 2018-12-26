@@ -1,4 +1,5 @@
 ﻿#include "game.h"
+#include "gameobject.h"
 #include "ui_game.h"
 #include <QPainter>
 #include <QTimer>
@@ -15,9 +16,19 @@
 #include <QJsonDocument>
 #include <QRandomGenerator>
 #include <QFontDatabase>
-
 #include <memory>
+
 static int SCORES;
+// система физики на колбеках, класы наследуемые подстраиваем под интерфейс и под то что нам нужно
+// разделяем гейм обджект на несколько клаасов, которые реализуют тоолько интерфейс,
+// система физики сообщает обьекту что он с чем то пересекаеться, а обьект уже сам решаттет что ему делать
+// глянуть и погуглить игровые паттерны и гитхаб галаги
+// мб метод ДУ которые будет анимировать, двигать, проверять пересекся ли обьект с чем то и уже предпринимать действия
+// в игровом цикле просто обджект ду, а он уже сам решает что там рисовать  и что делать
+// система проверки коллизий просто говорит обьектам с чем они пересекаються, а обьект уже сам решает что и как
+// управляющий код в тех класах, которыми он управляет
+// обьект реализует свое поведение
+// управление и взаемодейсвие с  игровыми обьектами через итерфейс, колбеки
 
 Game::Game(QWidget *parent) :
   QWidget(parent),
@@ -33,23 +44,23 @@ Game::Game(QWidget *parent) :
     sky.push_back(star);
   }
 
-  player = new Player();
-
   int id = QFontDatabase::addApplicationFont(":/images/images/emulogic.ttf");
   QString family = QFontDatabase::applicationFontFamilies(id).at(0);
   emulogic = QFont(family);
 
-  QTimer *timer = new QTimer(this);
+  timer = new QTimer(this);
   connect(timer, SIGNAL(timeout()), this, SLOT(update()));
-  timer->start(40);
+
 }
 
 void Game::newGame()
 {
   SCORES =  0;
 
+  player = new Player();
+
   for(int i =1; i<9; i++){
-      std::shared_ptr<Enemy> enemy (new Enemy(Enemy::Type::Fly,QPoint(50,50) - 50*i*QPoint(1,1),20));
+      std::shared_ptr<Enemy> enemy (new Enemy(Enemy::Type::Fly,QPoint(50,50) - 50*i*QPoint(1,1),15));
       enemy->addRoute(Route::Path::Line,QPoint(300,400));
       enemy->addRoute(Route::Path::Line,QPoint(600,100));
       enemy->addRoute(Route::Path::Sin,QPoint(200,400));
@@ -58,9 +69,8 @@ void Game::newGame()
       enemy->addRoute(Route::Path::Stay);
       enemies.push_back(enemy);
   }
-
   for(int i =1; i<9; i++){
-      std::shared_ptr<Enemy> enemy (new Enemy(Enemy::Type::Wasp,QPoint(600,800) + 70*i*QPoint(1,1),20));
+      std::shared_ptr<Enemy> enemy (new Enemy(Enemy::Type::Wasp,QPoint(600,800) + 70*i*QPoint(1,1),15));
       enemy->addRoute(Route::Path::Line,QPoint(150,200));
       enemy->addRoute(Route::Path::Sin,QPoint(250,300));
       enemy->addRoute(Route::Path::Lemniscate);
@@ -69,13 +79,15 @@ void Game::newGame()
       enemies.push_back(enemy);
   }
   for(int i =1; i<12; i++){
-      std::shared_ptr<Enemy> enemy (new Enemy(Enemy::Type::Lobster,QPoint(-800,1600) - 70*i*QPoint(-1,1),20));
+      std::shared_ptr<Enemy> enemy (new Enemy(Enemy::Type::Lobster,QPoint(-800,1600) - 70*i*QPoint(-1,1),15));
       enemy->addRoute(Route::Path::Line,QPoint(600,-50));
       enemy->addRoute(Route::Path::Lemniscate);
       enemy->addRoute(Route::Path::Sin,QPoint(550,400) + 42*i*QPoint(-1,0));
       enemy->addRoute(Route::Path::Stay);
       enemies.push_back(enemy);
   }
+
+  timer->start(35);
 }
 
 Game::~Game()
@@ -180,6 +192,7 @@ void Game::keyReleaseEvent(QKeyEvent *event)
 
 void Game::paintEvent(QPaintEvent *)
 {
+
   std::shared_ptr<QPainter> painter (new QPainter(this));
   painter->setCompositionMode(QPainter::CompositionMode::CompositionMode_DestinationOver);
   painter->setPen(Qt::PenStyle::NoPen);
@@ -235,15 +248,17 @@ for(auto enemy : enemies){
           std::shared_ptr<Explosion> newExplosion (new Explosion(QPoint(player->getRect().x(),player->getRect().y())));
           explosions.push_back(newExplosion);
           enemies.removeOne(enemy);
+          break;
         }
   }
   for(auto explosion : explosions){
-      explosion->draw(painter);
       if(explosion->getCurrentFrame() != 4){
           explosion->animate(GameObject::Animation::Stay);
+          explosion->draw(painter);
         }
       else{
           explosions.removeOne(explosion);
+          break;
         }
     }
   painter->setPen(QColor(Qt::red));

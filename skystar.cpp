@@ -9,23 +9,23 @@ SkyStar::SkyStar():GameObject ()
   color = QColor(QRandomGenerator::global()->bounded(0,255),QRandomGenerator::global()->bounded(0,255),QRandomGenerator::global()->bounded(0,255),QRandomGenerator::global()->bounded(0,255));
   rect = QRect(QRandomGenerator::global()->bounded(0,600),QRandomGenerator::global()->bounded(-120,700),size,size);
   if(rect.top() < 0){
-      shows = -10;
+      framesCount = -10;
     }
   else{
-      shows = 0;
+      framesCount = 0;
     }
-  shows = shows + QRandomGenerator::global()->bounded(-15,10);
+  framesCount = framesCount + QRandomGenerator::global()->bounded(-15,10);
 }
 
 void SkyStar::move()
 {
    rect = QRect(rect.left(),rect.top()+speed,rect.width(),rect.height());
-   shows++;
+   framesCount++;
 }
 
 int SkyStar::getShows()
 {
-   return shows;
+   return framesCount;
 }
 
 QColor SkyStar::getColor()
@@ -39,4 +39,5 @@ void SkyStar::draw(std::shared_ptr<QPainter> painter)
   painter->setBrush(brush);
   painter->drawRect(this->getRect());
 }
+
 

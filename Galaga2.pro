@@ -33,7 +33,8 @@ SOURCES += \
     shot.cpp \
     enemy.cpp \
     explosion.cpp \
-    route.cpp
+    route.cpp \
+    animated.cpp
 
 HEADERS += \
         game.h \
@@ -43,7 +44,8 @@ HEADERS += \
     shot.h \
     enemy.h \
     explosion.h \
-    route.h
+    route.h \
+    animated.h
 
 FORMS += \
         game.ui

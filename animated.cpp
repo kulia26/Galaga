@@ -1,6 +1,2 @@
-#include "animated.h"
+﻿#include "animated.h"
 
-Animated::Animated()
-{
-
-}

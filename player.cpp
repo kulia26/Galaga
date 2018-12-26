@@ -7,7 +7,7 @@
 #include <QJsonArray>
 #include <QJsonObject>
 
-Player::Player():GameObject ()
+Player::Player()
 {
 gameObjectType = GameObject::Type::Player;
 setPixmap(":/images/images/sprites.png");
@@ -19,7 +19,6 @@ addRoute(Route::Path::Right);
 setCurrentRoute(Route::Path::None);
 speed = 10;
 fireGun = false;
-makeFramesFromPixmap();
 }
 
 
@@ -53,28 +52,10 @@ void Player::move()
 
 }
 
-void Player::makeFramesFromPixmap(){
-  frame = &pixmap;
-}
-
-
 void Player::fire()
 {
-  if(shots.length() > 0){
-      if (shots.last()->getRect().top() < 615){
-          std::shared_ptr<Shot> newShot(new class Shot(QRect(rect.x()+21,rect.y(),6,12), Route::Path::Top));
-          shots.push_back(newShot);
-      }
-      for (int i = 1; i < shots.length(); i++){
-          if (shots[i]->getRect().top() < 0){
-              shots.remove(i);
-          }
-      }
-    }
-  else{
-      std::shared_ptr<Shot> newShot(new class Shot(QRect(rect.x()+21,rect.y(),6,12), Route::Path::Top));
-      shots.push_back(newShot);
-    }
+  std::shared_ptr<Shot> newShot(new class Shot(QRect(rect.x()+21,rect.y(),6,12), Route::Path::Top));
+  this->addShot(newShot);
 }
 
 void Player::makeFireGun(bool firegun)
@@ -87,21 +68,9 @@ bool Player::isFireGun()
   return fireGun;
 }
 
-void Player::removeShot(std::shared_ptr<Shot> shot)
-{
-  shots.removeOne(shot);
-}
-
-void Player::animate(Animation type){
-  framesCount++;
-  if(framesCount > 1000){
-      framesCount = 0;
-  }
-}
-
 void Player::draw(std::shared_ptr<QPainter> painter)
 {
-  painter->drawPixmap(this->getRect(),this->getPixmap());
+  painter->drawPixmap(rect,this->pixmap);
 }
 
 void Player::read(const QJsonObject &json)

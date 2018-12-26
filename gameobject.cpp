@@ -3,45 +3,14 @@
 #include <QJsonObject>
 #include <iostream>
 
-GameObject::GameObject()
-{
-  routes.clear();
-}
-
-GameObject::~GameObject()
-{
-  //std::cout << "destruct"<< std::endl;
-}
-
-void GameObject::animate(Animation type){
-
-}
 
 void GameObject::move(){
 
 }
 
-void GameObject::fire(){
-
-}
-
-bool GameObject::collide(std::shared_ptr<GameObject> object){
-  if(QRect(this->getRect() & object->getRect()).size() != QSize(0,0)){
-      return true;
-    }
-  return false;
-}
-
-bool GameObject::collide(GameObject* object){
-  if(QRect(this->getRect() & object->getRect()).size() != QSize(0,0)){
-      return true;
-    }
-  return false;
-}
-
 void GameObject::draw(std::shared_ptr<QPainter> painter)
 {
-  painter->drawPixmap(this->getRect(),this->getPixmap());
+  painter->drawPixmap(rect,this->pixmap);
 }
 
 void GameObject::read(const QJsonObject &json)
@@ -62,7 +31,7 @@ void GameObject::read(const QJsonObject &json)
   imagePath = json["imagePath"].toString();
   framesCount = 0;
   pixmap = QPixmap(imagePath);
-  makeFramesFromPixmap();
+  //makeFramesFromPixmap();
   std::cout <<"Animated::read2"<<std::endl;
 }
 
@@ -82,18 +51,12 @@ void GameObject::write(QJsonObject &json) const
   json["framesCount"] = 0;
 
 }
-QRect GameObject::getRect()
+
+QPoint GameObject::getPoint()
 {
-  return rect;
+  return rect.topLeft();
 }
 
-void GameObject::makeFramesFromPixmap(){
-  frames.clear();
-}
-
-QPixmap GameObject::getFrame(){
-  return *frame;
-}
 
 int GameObject::getCurrentFrame(){
   return frames.indexOf(frame);
@@ -103,25 +66,15 @@ int GameObject::getFramesCount(){
   return framesCount;
 }
 
-QPixmap GameObject::getPixmap()
-{
-  return pixmap;
-}
-
 void GameObject::setPixmap(QString path)
 {
   pixmap = QPixmap(path);
   this->imagePath = path;
 }
 
-QVector<std::shared_ptr<Shot>> GameObject::getShots()
-{
-  return shots;
-}
-
 void GameObject::addRoute(Route::Path path, QPoint end)
 {
-  Route* route = new Route(this, path, end);
+  auto route = new Route(this, path, end);
   route->setParent(this);
   routes.push_back(route);
   if(routes.first()==route){
@@ -131,13 +84,12 @@ void GameObject::addRoute(Route::Path path, QPoint end)
 
 void GameObject::addRoute(Route::Path path)
 {
-  Route* route = new Route(this, path);
+  auto route = new Route(this, path);
   routes.push_back(route);
   if(routes.first()==route){
       currentRoute = routes.first();
     }
 }
-
 
 
 

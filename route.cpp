@@ -4,23 +4,13 @@
 #include <QRect>
 #include <iostream>
 
-Route::Route()
-{
-
-}
-
-Route::~Route()
-{
-
-}
-
 Route::Route(class GameObject* object, Path path, QPoint end)
 {
   this->parent = object;
   this->path =path;
-  this->start = QPoint(parent->getRect().x(),parent->getRect().y());
+  this->start = parent->getPoint();
   this->end = end;
-  this->position = QPoint(parent->getRect().x(),parent->getRect().y());
+  this->position = parent->getPoint();
   theEnd = false;
   q=M_PI/2;
 }
@@ -29,10 +19,9 @@ Route::Route(class GameObject* object, Path path)
 {
   this->parent = object;
   this->path =path;
-  this->start = QPoint(parent->getRect().x(),parent->getRect().y());
+  this->start = parent->getPoint();
   this->end = QPoint(-100,-100);
-  this->position.setX(parent->getRect().x());
-  this->position.setX(parent->getRect().y());
+  this->position = parent->getPoint();
   this->path =path;
   theEnd = false;
 }
@@ -47,8 +36,7 @@ Route::Path Route::getRoutePath(){
 }
 
 void Route::setStart(){
-  start.setX(parent->getRect().x());
-  start.setY(parent->getRect().y());
+  start = parent->getPoint();
   position = start;
   theEnd = false;
 }
@@ -88,7 +76,7 @@ QPoint Route::getNextPoint(double speed){
     dy = speed*(end.y() - start.y())/length;
     }
   if(path== Path::Stay){
-      if(parent->getRect().x() - start.x() > -6){
+      if(parent->getPoint().x() - start.x() > -6){
           dx =dx - 1;
         }else{
           dx = dx+1;

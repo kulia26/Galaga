@@ -6,20 +6,20 @@
 #include <QVector>
 #include "gameobject.h"
 #include "shot.h"
+#include "animated.h"
+#include "shooter.h"
+#include "physicalobject.h"
 
-class Player : public GameObject
+class Player : public PhysicalObject, public Shooter
 {
 public:
   explicit Player();
   virtual ~Player() override;
   void move() final override;
   void fire() final override;
-  void animate(Animation type) final override;
-  void makeFramesFromPixmap() final override;
   void draw(std::shared_ptr<QPainter> painter) final override;
   void makeFireGun(bool);
   bool isFireGun();
-  void removeShot(std::shared_ptr<Shot> shot);
   void setCurrentRoute(Route::Path route);
   void read(const QJsonObject &json) final override;
   void write(QJsonObject &json) const final override;

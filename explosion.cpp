@@ -1,20 +1,14 @@
 ﻿#include "explosion.h"
 #include "iostream"
 
-Explosion::Explosion(QPoint point):GameObject()
+Explosion::Explosion(QPoint point)
 {
-  gameObjectType = Type::Explosion;
   pixmap = QPixmap(":/images/images/ExplosionSprites.png");
   makeFramesFromPixmap();
   rect  = QRect(point.x()-24,point.y()-24,frame->width()*3,frame->height()*3);
 }
 
-Explosion::~Explosion()
-{
-  std::cout << "destruct explosion"<< std::endl;
-}
-
-void Explosion::animate(Animation type){
+void Explosion::animate(Animation){
   if(framesCount % 1 == 0){
       if(frames.indexOf(frame) != 4){
           frame = frames[frames.indexOf(frame)+1];
@@ -40,5 +34,5 @@ void Explosion::makeFramesFromPixmap(){
 
 void Explosion::draw(std::shared_ptr<QPainter> painter)
 {
-  painter->drawPixmap(this->getRect(),this->getFrame());
+  painter->drawPixmap(rect,*frame);
 }

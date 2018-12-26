@@ -2,7 +2,7 @@
 #include <QRandomGenerator>
 #include <QPainter>
 
-SkyStar::SkyStar():GameObject ()
+SkyStar::SkyStar()
 {
   int size  = QRandomGenerator::global()->bounded(1,3);
   speed = QRandomGenerator::global()->bounded(1,6);
@@ -19,7 +19,7 @@ SkyStar::SkyStar():GameObject ()
 
 void SkyStar::move()
 {
-   rect = QRect(rect.left(),rect.top()+speed,rect.width(),rect.height());
+   rect = QRect(rect.left(),rect.top()+qRound(speed),rect.width(),rect.height());
    framesCount++;
 }
 
@@ -37,7 +37,7 @@ void SkyStar::draw(std::shared_ptr<QPainter> painter)
 {
   QBrush brush(this->getColor());
   painter->setBrush(brush);
-  painter->drawRect(this->getRect());
+  painter->drawRect(this->rect);
 }
 
 

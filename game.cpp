@@ -39,6 +39,7 @@ Game::Game(QWidget *parent) :
   this->setPalette(QPalette(QColor(255,255,255,0)));
   this->setWindowTitle("Galaga");
 
+  sky.reserve(500);
   for(int i = 0; i < 500; i++){
     std::shared_ptr<SkyStar> star(new SkyStar());
     sky.push_back(star);
@@ -117,7 +118,7 @@ void Game::write(QJsonObject &json) const
     player->write(playerObject);
     json["player"] = playerObject;
 
-    QJsonArray enemiesArray;
+    //QJsonArray enemiesArray;
     /*foreach (const Enemy* enemy, enemies) {
         QJsonObject enemyObject;
         enemy->write(enemyObject);
@@ -197,7 +198,7 @@ void Game::paintEvent(QPaintEvent *)
   painter->setCompositionMode(QPainter::CompositionMode::CompositionMode_DestinationOver);
   painter->setPen(Qt::PenStyle::NoPen);
   //draw stars
-  for(auto star : sky){
+  for(auto& star : sky){
       star->draw(painter);
       star->move();
       //remove old stars
@@ -217,26 +218,26 @@ void Game::paintEvent(QPaintEvent *)
       player->fire();
   }
   //draw player shots
-  for(auto shot : player->getShots()){
+  for(auto& shot : player->getShots()){
       shot->draw(painter);
       shot->move();
     }
   //draw enemies
 
-for(auto enemy : enemies){
+for(auto& enemy : enemies){
       enemy->draw(painter);
       enemy->move();
       enemy->fire();
       enemy->attack(player);
 
-      for(auto shot : enemy->getShots()){
+      for(auto& shot : enemy->getShots()){
           shot->draw(painter);
           shot->move();
       }
 
-      for(auto shot : player->getShots()){
+      for(auto& shot : player->getShots()){
           if(enemy->collide(shot)){
-              std::shared_ptr<Explosion> newExplosion (new Explosion(QPoint(enemy->getRect().x(),enemy->getRect().y())));
+              std::shared_ptr<Explosion> newExplosion (new Explosion(enemy->getPoint()));
               explosions.push_back(newExplosion);
               enemies.removeOne(enemy);
               SCORES++;
@@ -245,15 +246,15 @@ for(auto enemy : enemies){
             }
       }
       if(enemy->collide(player)){
-          std::shared_ptr<Explosion> newExplosion (new Explosion(QPoint(player->getRect().x(),player->getRect().y())));
+          std::shared_ptr<Explosion> newExplosion (new Explosion(enemy->getPoint()));
           explosions.push_back(newExplosion);
           enemies.removeOne(enemy);
           break;
         }
   }
-  for(auto explosion : explosions){
+  for(auto& explosion : explosions){
       if(explosion->getCurrentFrame() != 4){
-          explosion->animate(GameObject::Animation::Stay);
+          explosion->animate(Animated::Animation::Stay);
           explosion->draw(painter);
         }
       else{

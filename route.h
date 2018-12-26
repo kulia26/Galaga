@@ -9,10 +9,11 @@ class Route
 public:
   enum class Path {Line, Stay, Left, Right, Bottom, None, Lemniscate, Sin, Top};
 
-  explicit Route();
+
   explicit Route(class GameObject* object, Route::Path path, QPoint end);
   explicit Route(class GameObject* object,Route::Path path);
-  virtual ~Route();
+  Route() = default;
+  virtual ~Route() = default;
 
   QPoint getNextPoint(double speed);
   Route::Path getRoutePath();

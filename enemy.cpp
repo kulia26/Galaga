@@ -9,7 +9,7 @@
 #include <QJsonArray>
 #include <memory>
 
-Enemy::Enemy(Enemy::Type type, QPoint start,double speed):GameObject()
+Enemy::Enemy(Enemy::Type type, QPoint start,double speed)
 {
   gameObjectType = GameObject::Type::Enemy;
   this->speed = speed;
@@ -28,18 +28,13 @@ Enemy::Enemy(Enemy::Type type, QPoint start,double speed):GameObject()
   canAttack = true;
 }
 
-Enemy::Enemy()
-{
- gameObjectType = GameObject::Type::Enemy;
-}
-
 Enemy::~Enemy()
 {
  std::cout << "destruct enemy"<< std::endl;
 }
 
 QPoint* Enemy::getPosition(){
-  return new QPoint(getRect().x(),getRect().y());
+  return new QPoint(rect.topLeft());
 }
 
 void Enemy::makeFramesFromPixmap(){
@@ -81,28 +76,17 @@ void Enemy::move()
 void Enemy::fire()
 {
   if(framesCount%QRandomGenerator::global()->bounded(60,120) == 0 && currentRoute->getRoutePath() == Route::Path::Stay){
-      if(shots.length() > 0){
           std::shared_ptr<Shot> newShot(new class Shot(QRect(rect.x()+10,rect.y()+15,6,12), Route::Path::Bottom));
-          shots.push_back(newShot);
-          for (int i = 1; i < shots.length(); i++){
-              if (shots[i]->getRect().top() < 0){
-                  shots.remove(i);
-              }
-          }
-        }
-      else{
-          std::shared_ptr<Shot> newShot(new class Shot(QRect(rect.x()+10,rect.y()+15,6,12), Route::Path::Bottom));
-          shots.push_back(newShot);
-        }
+          this->addShot(newShot);
     }
 }
 
 void Enemy::attack(GameObject* player){
   if(framesCount == QRandomGenerator::global()->bounded(150, 250) && canAttack){
       std::cout << "attack" << std::endl;
-      addRoute(Route::Path::Sin, player->getRect().topLeft());
+      addRoute(Route::Path::Sin, player->getPoint());
       addRoute(Route::Path::Lemniscate);
-      addRoute(Route::Path::Sin, this->getRect().topLeft());
+      addRoute(Route::Path::Sin, this->getPoint());
       addRoute(Route::Path::Stay);
       canAttack = false;
     }
@@ -133,7 +117,7 @@ void Enemy::animate(Animation type){
 
 void Enemy::draw(std::shared_ptr<QPainter> painter)
 {
-  painter->drawPixmap(this->getRect(),this->getFrame());
+  painter->drawPixmap(rect,*frame);
 }
 
 void Enemy::read(const QJsonObject &json)
@@ -147,9 +131,9 @@ void Enemy::read(const QJsonObject &json)
 
             QJsonObject routeObject = routesArray[routeIndex].toObject();
             std::cout << routeIndex<<std::endl;
-            Route* route = new Route();
-            route->read(routeObject);
-            routes.push_back(route);
+            //auto route = new Route();
+            //route->read(routeObject);
+            //routes.push_back(route);
         }
     std::cout<<routes.length()<<std::endl;
     currentRoute  = routes.first();

@@ -2,13 +2,16 @@
 #define ENEMY_H
 
 #include "gameobject.h"
+#include "animated.h"
 #include "shot.h"
 #include "route.h"
 #include <QVector>
 #include <QPoint>
 #include <memory>
+#include "shooter.h"
+#include "physicalobject.h"
 
-class Enemy : public GameObject
+class Enemy : public PhysicalObject, public Animated, public Shooter
 {
 public:
   enum class Type { Lobster, Fly, Wasp };

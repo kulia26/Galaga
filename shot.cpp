@@ -2,7 +2,7 @@
 #include "gameobject.h"
 #include<iostream>
 
-Shot::Shot(QRect rect, Route::Path path):GameObject()
+Shot::Shot(QRect rect, Route::Path path)
 {
   this->rect = rect;
   pixmap = QPixmap(":/images/images/sprites.png").copy(QRect(222,213,3,6));
@@ -11,12 +11,7 @@ Shot::Shot(QRect rect, Route::Path path):GameObject()
 }
   speed = 20;
   addRoute(path);
-  currentRoute->setStart();
-}
-
-Shot::~Shot()
-{
-std::cout << "destruct shot"<< std::endl;
+  //currentRoute->setStart();
 }
 
 void Shot::move()
@@ -26,5 +21,5 @@ void Shot::move()
 
 void Shot::draw(std::shared_ptr<QPainter> painter)
 {
-  painter->drawPixmap(this->getRect(),this->getPixmap());
+  painter->drawPixmap(rect,this->pixmap);
 }

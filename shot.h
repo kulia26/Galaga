@@ -8,9 +8,8 @@
 class Shot : public PhysicalObject
 {
 public:
-  explicit Shot(QRect rect,Route::Path path);
+  explicit Shot(QRect rect, Route::Path path);
   void move() override;
-  void draw(std::shared_ptr<QPainter> painter) final override;
 };
 
 #endif // SHOT_H

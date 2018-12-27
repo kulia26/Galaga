@@ -6,20 +6,19 @@ Shot::Shot(QRect rect, Route::Path path)
 {
   this->rect = rect;
   pixmap = QPixmap(":/images/images/sprites.png").copy(QRect(222,213,3,6));
-      if(path == Route::Path::Bottom){
+  if(path == Route::Path::Bottom){
       pixmap = pixmap.transformed(QTransform().rotate(180));
-}
-  speed = 20;
-  addRoute(path);
-  //currentRoute->setStart();
+      speed = 20;
+    }else{
+      speed = -20;
+    }
 }
 
 void Shot::move()
 {
-  rect.moveTo(currentRoute->getNextPoint(speed));
+  rect = QRect(rect.left(),rect.top()+qRound(speed),rect.width(),rect.height());
+  if (rect.y() < -50 || rect.y() > 850){
+      this->hurt();
+    }
 }
 
-void Shot::draw(std::shared_ptr<QPainter> painter)
-{
-  painter->drawPixmap(rect,this->pixmap);
-}

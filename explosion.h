@@ -6,7 +6,7 @@
 
 #include <QVector>
 
-class Explosion : public GameObject, public Animated
+class Explosion : public GameObject, protected Animated
 {
 public:
   explicit Explosion(QPoint point);

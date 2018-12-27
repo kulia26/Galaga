@@ -38,7 +38,7 @@ void Shooter::addShot(std::shared_ptr<Shot> shot){
 QVector<std::shared_ptr<Shot>> Shooter::getShots()
 {
   for (auto& shot : shots){
-      if (shot->getPoint().y() < -50 || shot->getPoint().y() > 850){
+      if (!shot->isAlive()){
           removeShot(shot);
           break;
       }

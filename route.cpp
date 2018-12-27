@@ -26,11 +26,6 @@ Route::Route(class GameObject* object, Path path)
   theEnd = false;
 }
 
-void Route::setParent(class GameObject* object)
-{
-  this->parent = object;
-}
-
 Route::Path Route::getRoutePath(){
   return path;
 }

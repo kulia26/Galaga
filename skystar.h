@@ -11,7 +11,6 @@ public:
   SkyStar();
   void move() final override;
   void draw(std::shared_ptr<QPainter> painter) final override;
-  int getShows();
   QColor getColor();
 private:
   QColor color;

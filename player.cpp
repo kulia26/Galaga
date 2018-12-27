@@ -43,13 +43,16 @@ void Player::setCurrentRoute(Route::Path route){
 }
 
 void Player::move()
-{ if(currentRoute->getRoutePath() == Route::Path::Left && rect.x() > 10){
+{
+  if(currentRoute->getRoutePath() == Route::Path::Left && rect.x() > 10){
       rect.moveTo(currentRoute->getNextPoint(speed));
     }
   if(currentRoute->getRoutePath() == Route::Path::Right && rect.x() < 590 - rect.width()){
         rect.moveTo(currentRoute->getNextPoint(speed));
       }
-
+  if(this->isFireGun()){
+      this->fire();
+  }
 }
 
 void Player::fire()
@@ -66,11 +69,6 @@ void Player::makeFireGun(bool firegun)
 bool Player::isFireGun()
 {
   return fireGun;
-}
-
-void Player::draw(std::shared_ptr<QPainter> painter)
-{
-  painter->drawPixmap(rect,this->pixmap);
 }
 
 void Player::read(const QJsonObject &json)

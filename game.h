@@ -25,6 +25,7 @@ private:
   QVector<std::shared_ptr<Explosion>> explosions;
 public:
   explicit Game(QWidget *parent = nullptr);
+  void execute();
   void paintEvent(QPaintEvent *event);
   void keyPressEvent(QKeyEvent *event);
   void keyReleaseEvent(QKeyEvent *event);

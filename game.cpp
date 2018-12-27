@@ -191,76 +191,100 @@ void Game::keyReleaseEvent(QKeyEvent *event)
   }
 }
 
+void Game::execute(){
+
+  for(auto& star : sky){
+      star->move();
+      //remove old stars
+      if(!star->isAlive()){
+          sky.removeOne(star);
+          std::shared_ptr<SkyStar> newStar (new SkyStar());
+          sky.push_back(newStar);
+        }
+    }
+
+  player->move();
+
+  for(auto& shot : player->getShots()){
+      shot->move();
+  }
+
+  for(auto& enemy : enemies){
+      if(enemy->isAlive()){
+          enemy->move();
+          enemy->attack(player);
+          for(auto& shot : enemy->getShots()){
+              if(shot->isAlive()){
+                  shot->move();
+                  if(shot->collide(player)){
+                      std::shared_ptr<Explosion> newExplosion (new Explosion(player->getPoint()));
+                      explosions.push_back(newExplosion);
+                      break;
+                    }
+                }else{
+                  enemy->removeShot(shot);
+                }
+            }
+          for(auto& shot : player->getShots()){
+              if(shot->isAlive()){
+                  if(enemy->collide(shot)){
+                      std::shared_ptr<Explosion> newExplosion (new Explosion(enemy->getPoint()));
+                      explosions.push_back(newExplosion);
+                      SCORES++;
+                      break;
+                    }
+                }else{
+                  player->removeShot(shot);
+                }
+            }
+          if(enemy->collide(player)){
+              std::shared_ptr<Explosion> newExplosion (new Explosion(enemy->getPoint()));
+              explosions.push_back(newExplosion);
+              break;
+            }
+        }
+      else{
+          enemies.removeOne(enemy);
+        }
+  }
+  for(auto& explosion : explosions){
+      if(explosion->isAlive()){
+          explosion->animate(Animated::Animation::Stay);
+        }
+      else{
+          explosions.removeOne(explosion);
+          break;
+        }
+    }
+}
+
 void Game::paintEvent(QPaintEvent *)
 {
-
+  this->execute();
   std::shared_ptr<QPainter> painter (new QPainter(this));
   painter->setCompositionMode(QPainter::CompositionMode::CompositionMode_DestinationOver);
   painter->setPen(Qt::PenStyle::NoPen);
   //draw stars
   for(auto& star : sky){
       star->draw(painter);
-      star->move();
-      //remove old stars
-      if (star->getShows() > 50){
-         sky.removeOne(star);
-         std::shared_ptr<SkyStar> newStar (new SkyStar());
-         sky.push_back(newStar);
-      }
     }
   //draw player
-  //move player
-  player->draw(painter);
+  player->draw(painter);  
 
-  player->move();
-  //fire if player is firegun
-  if(player->isFireGun()){
-      player->fire();
-  }
   //draw player shots
   for(auto& shot : player->getShots()){
       shot->draw(painter);
-      shot->move();
     }
   //draw enemies
 
-for(auto& enemy : enemies){
+  for(auto& enemy : enemies){
       enemy->draw(painter);
-      enemy->move();
-      enemy->fire();
-      enemy->attack(player);
-
       for(auto& shot : enemy->getShots()){
           shot->draw(painter);
-          shot->move();
-      }
-
-      for(auto& shot : player->getShots()){
-          if(enemy->collide(shot)){
-              std::shared_ptr<Explosion> newExplosion (new Explosion(enemy->getPoint()));
-              explosions.push_back(newExplosion);
-              enemies.removeOne(enemy);
-              SCORES++;
-              player->removeShot(shot);
-              break;
-            }
-      }
-      if(enemy->collide(player)){
-          std::shared_ptr<Explosion> newExplosion (new Explosion(enemy->getPoint()));
-          explosions.push_back(newExplosion);
-          enemies.removeOne(enemy);
-          break;
         }
-  }
+    }
   for(auto& explosion : explosions){
-      if(explosion->getCurrentFrame() != 4){
-          explosion->animate(Animated::Animation::Stay);
-          explosion->draw(painter);
-        }
-      else{
-          explosions.removeOne(explosion);
-          break;
-        }
+      explosion->draw(painter);
     }
   painter->setPen(QColor(Qt::red));
   painter->setBrush(QBrush(Qt::BrushStyle::SolidPattern));

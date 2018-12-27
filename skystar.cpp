@@ -9,23 +9,18 @@ SkyStar::SkyStar()
   color = QColor(QRandomGenerator::global()->bounded(0,255),QRandomGenerator::global()->bounded(0,255),QRandomGenerator::global()->bounded(0,255),QRandomGenerator::global()->bounded(0,255));
   rect = QRect(QRandomGenerator::global()->bounded(0,600),QRandomGenerator::global()->bounded(-120,700),size,size);
   if(rect.top() < 0){
-      framesCount = -10;
+      lives = 15;
     }
   else{
-      framesCount = 0;
+      lives = 0;
     }
-  framesCount = framesCount + QRandomGenerator::global()->bounded(-15,10);
+  lives = lives + QRandomGenerator::global()->bounded(25,40);
 }
 
 void SkyStar::move()
 {
    rect = QRect(rect.left(),rect.top()+qRound(speed),rect.width(),rect.height());
-   framesCount++;
-}
-
-int SkyStar::getShows()
-{
-   return framesCount;
+   this-> hurt();
 }
 
 QColor SkyStar::getColor()

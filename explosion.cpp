@@ -6,20 +6,15 @@ Explosion::Explosion(QPoint point)
   pixmap = QPixmap(":/images/images/ExplosionSprites.png");
   makeFramesFromPixmap();
   rect  = QRect(point.x()-24,point.y()-24,frame->width()*3,frame->height()*3);
+  lives = 4;
 }
 
 void Explosion::animate(Animation){
-  if(framesCount % 1 == 0){
-      if(frames.indexOf(frame) != 4){
-          frame = frames[frames.indexOf(frame)+1];
-        }
-  }
-  if(framesCount > 1000){
-      framesCount = 0;
-  }
-  framesCount++;
-}
+hurt();
+int index = frames.indexOf(frame);
+frame = frames[index + 1];
 
+}
 
 void Explosion::makeFramesFromPixmap(){
   for(int i=0; i<5;i++){

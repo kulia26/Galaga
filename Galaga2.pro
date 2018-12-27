@@ -37,7 +37,8 @@ SOURCES += \
     animated.cpp \
     shooter.cpp \
     drawed.cpp \
-    physicalobject.cpp
+    physicalobject.cpp \
+    routed.cpp
 
 HEADERS += \
         game.h \
@@ -51,7 +52,8 @@ HEADERS += \
     animated.h \
     shooter.h \
     drawed.h \
-    physicalobject.h
+    physicalobject.h \
+    routed.h
 
 FORMS += \
         game.ui

@@ -10,8 +10,9 @@
 #include <memory>
 #include "shooter.h"
 #include "physicalobject.h"
+#include "routed.h"
 
-class Enemy : public PhysicalObject, public Animated, public Shooter
+class Enemy : public PhysicalObject, protected Animated, public Shooter
 {
 public:
   enum class Type { Lobster, Fly, Wasp };
@@ -24,7 +25,6 @@ public:
   void fire() final override;//
   void draw(std::shared_ptr<QPainter> painter) final override;
   void attack(GameObject* player);
-  QPoint* getPosition();
 
   void read(const QJsonObject &json) final override;
   void write(QJsonObject &json) const final override;

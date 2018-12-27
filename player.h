@@ -9,6 +9,7 @@
 #include "animated.h"
 #include "shooter.h"
 #include "physicalobject.h"
+#include "routed.h"
 
 class Player : public PhysicalObject, public Shooter
 {
@@ -17,7 +18,6 @@ public:
   virtual ~Player() override;
   void move() final override;
   void fire() final override;
-  void draw(std::shared_ptr<QPainter> painter) final override;
   void makeFireGun(bool);
   bool isFireGun();
   void setCurrentRoute(Route::Path route);

@@ -11,6 +11,8 @@ public:
   virtual ~PhysicalObject() = default;
   bool collide(const std::shared_ptr<PhysicalObject> object);
   bool collide(PhysicalObject* object);//*
+  void makeHurt(PhysicalObject* object1, PhysicalObject* object2);
+  void makeHurt(PhysicalObject* object1, const std::shared_ptr<PhysicalObject> object2);
   QRect getRect();
 };
 

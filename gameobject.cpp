@@ -8,6 +8,14 @@ void GameObject::move(){
 
 }
 
+void GameObject:: hurt(){
+  lives--;
+}
+
+bool GameObject::isAlive(){
+  return lives > 0;
+}
+
 void GameObject::draw(std::shared_ptr<QPainter> painter)
 {
   painter->drawPixmap(rect,this->pixmap);
@@ -29,7 +37,7 @@ void GameObject::read(const QJsonObject &json)
 
   std::cout <<"Animated::read1"<<std::endl;
   imagePath = json["imagePath"].toString();
-  framesCount = 0;
+  //framesCount = 0;
   pixmap = QPixmap(imagePath);
   //makeFramesFromPixmap();
   std::cout <<"Animated::read2"<<std::endl;
@@ -58,24 +66,16 @@ QPoint GameObject::getPoint()
 }
 
 
-int GameObject::getCurrentFrame(){
-  return frames.indexOf(frame);
-}
-
-int GameObject::getFramesCount(){
-  return framesCount;
-}
-
 void GameObject::setPixmap(QString path)
 {
   pixmap = QPixmap(path);
   this->imagePath = path;
 }
 
+
 void GameObject::addRoute(Route::Path path, QPoint end)
 {
   auto route = new Route(this, path, end);
-  route->setParent(this);
   routes.push_back(route);
   if(routes.first()==route){
       currentRoute = routes.first();

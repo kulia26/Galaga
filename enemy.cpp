@@ -33,10 +33,6 @@ Enemy::~Enemy()
  std::cout << "destruct enemy"<< std::endl;
 }
 
-QPoint* Enemy::getPosition(){
-  return new QPoint(rect.topLeft());
-}
-
 void Enemy::makeFramesFromPixmap(){
   frames.clear();
   for(int i=0; i<9;i++){
@@ -71,6 +67,7 @@ void Enemy::move()
           currentRoute->setStart();
         }
     }
+  this->fire();
 }
 
 void Enemy::fire()
@@ -85,7 +82,6 @@ void Enemy::attack(GameObject* player){
   if(framesCount == QRandomGenerator::global()->bounded(150, 250) && canAttack){
       std::cout << "attack" << std::endl;
       addRoute(Route::Path::Sin, player->getPoint());
-      addRoute(Route::Path::Lemniscate);
       addRoute(Route::Path::Sin, this->getPoint());
       addRoute(Route::Path::Stay);
       canAttack = false;

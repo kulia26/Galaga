@@ -9,8 +9,10 @@
 #include <QPainter>
 #include <memory>
 #include "drawed.h"
+#include "animated.h"
+#include "routed.h"
 
-class GameObject: public Drawed
+class GameObject: public Drawed, protected Routed
 {
 public:
   enum class Type{Player, Enemy, Explosion, Shot};
@@ -20,13 +22,13 @@ public:
 
   virtual void move();
   void draw(std::shared_ptr<QPainter> painter);
+  void addRoute(Route::Path path, QPoint end);
+  void addRoute(Route::Path path);
 
-  int getCurrentFrame();
   void setPixmap(QString path);
   QPoint getPoint();
-  void addRoute(Route::Path path, QPoint end);//
-  void addRoute(Route::Path path);//
-  int getFramesCount();
+  void  hurt();
+  bool isAlive();
 
   virtual void read(const QJsonObject &json);
   virtual void write(QJsonObject &json) const;
@@ -34,14 +36,9 @@ public:
 protected:
   double speed;
   GameObject::Type gameObjectType;
-  QRect rect;//
+  QRect rect;
   QPixmap pixmap;
-  QPixmap* frame;
-  QVector<QPixmap*> frames;
-  int framesCount;
-  Route* currentRoute;
-  QVector<Route*> routes;
-
+  int lives = 1;
 private:
   QString imagePath;
 };

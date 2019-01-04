@@ -5,6 +5,7 @@
 Shot::Shot(QRect rect, Route::Path path)
 {
   this->rect = rect;
+  this->gameObjectType = GameObject::Type::Shot;
   pixmap = QPixmap(":/images/images/sprites.png").copy(QRect(222,213,3,6));
   if(path == Route::Path::Bottom){
       pixmap = pixmap.transformed(QTransform().rotate(180));

@@ -27,6 +27,7 @@ public:
 
   void setPixmap(QString path);
   QPoint getPoint();
+  Type getType();
   void  hurt();
   bool isAlive();
 

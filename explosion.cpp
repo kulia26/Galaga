@@ -3,6 +3,7 @@
 
 Explosion::Explosion(QPoint point)
 {
+
   pixmap = QPixmap(":/images/images/ExplosionSprites.png");
   makeFramesFromPixmap();
   rect  = QRect(point.x()-24,point.y()-24,frame->width()*3,frame->height()*3);

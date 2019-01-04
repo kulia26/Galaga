@@ -19,16 +19,6 @@
 #include <memory>
 
 static int SCORES;
-// система физики на колбеках, класы наследуемые подстраиваем под интерфейс и под то что нам нужно
-// разделяем гейм обджект на несколько клаасов, которые реализуют тоолько интерфейс,
-// система физики сообщает обьекту что он с чем то пересекаеться, а обьект уже сам решаттет что ему делать
-// глянуть и погуглить игровые паттерны и гитхаб галаги
-// мб метод ДУ которые будет анимировать, двигать, проверять пересекся ли обьект с чем то и уже предпринимать действия
-// в игровом цикле просто обджект ду, а он уже сам решает что там рисовать  и что делать
-// система проверки коллизий просто говорит обьектам с чем они пересекаються, а обьект уже сам решает что и как
-// управляющий код в тех класах, которыми он управляет
-// обьект реализует свое поведение
-// управление и взаемодейсвие с  игровыми обьектами через итерфейс, колбеки
 
 Game::Game(QWidget *parent) :
   QWidget(parent),
@@ -58,7 +48,9 @@ void Game::newGame()
 {
   SCORES =  0;
 
-  player = new Player();
+  std::shared_ptr<Player> player (new Player());
+  players.push_back(player);
+  this->player = player;
 
   for(int i =1; i<9; i++){
       std::shared_ptr<Enemy> enemy (new Enemy(Enemy::Type::Fly,QPoint(50,50) - 50*i*QPoint(1,1),15));
@@ -115,7 +107,7 @@ void Game::read(const QJsonObject &json)
 void Game::write(QJsonObject &json) const
 {
     QJsonObject playerObject;
-    player->write(playerObject);
+    //player->write(playerObject);
     json["player"] = playerObject;
 
     //QJsonArray enemiesArray;
@@ -194,61 +186,58 @@ void Game::keyReleaseEvent(QKeyEvent *event)
 void Game::execute(){
 
   for(auto& star : sky){
-      star->move();
       //remove old stars
       if(!star->isAlive()){
           sky.removeOne(star);
           std::shared_ptr<SkyStar> newStar (new SkyStar());
           sky.push_back(newStar);
+        }else{
+          star->move();
+          drawable.append(star);
         }
     }
 
+  resolveCollisions();
+
   player->move();
+  drawable.append(player);
+
+  if(!physical.contains(player) ){
+      physical.append(player);
+    }
 
   for(auto& shot : player->getShots()){
       shot->move();
-  }
+      drawable.append(shot);
+      if(!physical.contains(shot)){
+          physical.append(shot);
+        }
+    }
 
   for(auto& enemy : enemies){
       if(enemy->isAlive()){
           enemy->move();
           enemy->attack(player);
+          drawable.append(enemy);
+          if(!physical.contains(enemy)){
+              physical.append(enemy);
+            }
           for(auto& shot : enemy->getShots()){
-              if(shot->isAlive()){
-                  shot->move();
-                  if(shot->collide(player)){
-                      std::shared_ptr<Explosion> newExplosion (new Explosion(player->getPoint()));
-                      explosions.push_back(newExplosion);
-                      break;
-                    }
-                }else{
-                  enemy->removeShot(shot);
+              shot->move();
+              drawable.append(shot);
+              if(!physical.contains(shot)){
+                  physical.append(shot);
                 }
-            }
-          for(auto& shot : player->getShots()){
-              if(shot->isAlive()){
-                  if(enemy->collide(shot)){
-                      std::shared_ptr<Explosion> newExplosion (new Explosion(enemy->getPoint()));
-                      explosions.push_back(newExplosion);
-                      SCORES++;
-                      break;
-                    }
-                }else{
-                  player->removeShot(shot);
-                }
-            }
-          if(enemy->collide(player)){
-              std::shared_ptr<Explosion> newExplosion (new Explosion(enemy->getPoint()));
-              explosions.push_back(newExplosion);
-              break;
             }
         }
       else{
           enemies.removeOne(enemy);
         }
   }
+
   for(auto& explosion : explosions){
       if(explosion->isAlive()){
+          drawable.append(explosion);
           explosion->animate(Animated::Animation::Stay);
         }
       else{
@@ -258,34 +247,40 @@ void Game::execute(){
     }
 }
 
+void Game::resolveCollisions()
+{
+  for(auto& physicalObject1 : physical){
+      for (auto physicalObject2 = &physicalObject1+1; physicalObject2 != physical.end(); ++physicalObject2){
+          if(physicalObject1->collide(*physicalObject2)){
+              if(!(*physicalObject2)->isAlive()){
+                  std::shared_ptr<Explosion> newExplosion (new Explosion(physicalObject1->getPoint()));
+                  explosions.push_back(newExplosion);
+                  physical.removeOne(*physicalObject2);
+                  break;
+                }
+            }
+        }
+      if(!physicalObject1->isAlive()){
+          physical.removeOne(physicalObject1);
+          break;
+        }
+    }
+}
+
+
 void Game::paintEvent(QPaintEvent *)
 {
+  drawable.clear();
   this->execute();
+
   std::shared_ptr<QPainter> painter (new QPainter(this));
   painter->setCompositionMode(QPainter::CompositionMode::CompositionMode_DestinationOver);
   painter->setPen(Qt::PenStyle::NoPen);
-  //draw stars
-  for(auto& star : sky){
-      star->draw(painter);
-    }
-  //draw player
-  player->draw(painter);  
 
-  //draw player shots
-  for(auto& shot : player->getShots()){
-      shot->draw(painter);
+  for(auto& drawedObject : drawable){
+      drawedObject->draw(painter);
     }
-  //draw enemies
 
-  for(auto& enemy : enemies){
-      enemy->draw(painter);
-      for(auto& shot : enemy->getShots()){
-          shot->draw(painter);
-        }
-    }
-  for(auto& explosion : explosions){
-      explosion->draw(painter);
-    }
   painter->setPen(QColor(Qt::red));
   painter->setBrush(QBrush(Qt::BrushStyle::SolidPattern));
   painter->setFont(emulogic);

@@ -32,7 +32,6 @@ void Shooter::addShot(std::shared_ptr<Shot> shot){
           shots.push_back(shot);
         }
     }
-  std::cout<<shots.length()<<std::endl;
 }
 
 QVector<std::shared_ptr<Shot>> Shooter::getShots()

@@ -30,7 +30,7 @@ Enemy::Enemy(Enemy::Type type, QPoint start,double speed)
 
 Enemy::~Enemy()
 {
- std::cout << "destruct enemy"<< std::endl;
+
 }
 
 void Enemy::makeFramesFromPixmap(){
@@ -78,7 +78,7 @@ void Enemy::fire()
     }
 }
 
-void Enemy::attack(GameObject* player){
+void Enemy::attack(std::shared_ptr<GameObject> player){
   if(framesCount == QRandomGenerator::global()->bounded(150, 250) && canAttack){
       std::cout << "attack" << std::endl;
       addRoute(Route::Path::Sin, player->getPoint());

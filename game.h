@@ -8,6 +8,7 @@
 #include "enemy.h"
 #include "explosion.h"
 #include <memory>
+
 namespace Ui {
   class Game;
 }
@@ -19,13 +20,18 @@ private:
   Ui::Game *ui;
   QTimer *timer;
   QFont emulogic;
-  Player* player;
+  std::shared_ptr<Player> player;
+  QVector<std::shared_ptr<Player>> players;
   QVector<std::shared_ptr<SkyStar>> sky;
   QVector<std::shared_ptr<Enemy>> enemies;
   QVector<std::shared_ptr<Explosion>> explosions;
+
+  QVector<std::shared_ptr<Drawed>> drawable;
+  QVector<std::shared_ptr<PhysicalObject>> physical;
 public:
   explicit Game(QWidget *parent = nullptr);
   void execute();
+  void resolveCollisions();
   void paintEvent(QPaintEvent *event);
   void keyPressEvent(QKeyEvent *event);
   void keyReleaseEvent(QKeyEvent *event);

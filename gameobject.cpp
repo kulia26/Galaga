@@ -15,7 +15,9 @@ void GameObject:: hurt(){
 bool GameObject::isAlive(){
   return lives > 0;
 }
-
+GameObject::Type GameObject::getType(){
+  return gameObjectType;
+}
 void GameObject::draw(std::shared_ptr<QPainter> painter)
 {
   painter->drawPixmap(rect,this->pixmap);

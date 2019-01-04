@@ -8,7 +8,7 @@ int main(int argc, char *argv[])
   //w.loadGame();
   w.newGame();
   w.show();
-  w.saveGame();
+  //w.saveGame();
  // w.show();
 
   return a.exec();

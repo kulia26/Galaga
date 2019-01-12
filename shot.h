@@ -8,8 +8,10 @@
 class Shot : public PhysicalObject
 {
 public:
-  explicit Shot(QRect rect, Route::Path path);
+  explicit Shot(QRect rect, GameObject::Type owner);
+  explicit Shot() = default;
   void move() override;
+  void reuse(QPoint point);
 };
 
 #endif // SHOT_H

@@ -5,6 +5,7 @@
 #include <QTimer>
 #include "skystar.h"
 #include "player.h"
+#include "enemiesfactory.h"
 #include "enemy.h"
 #include <QWidget>
 #include <QKeyEvent>
@@ -17,8 +18,9 @@
 #include <QRandomGenerator>
 #include <QFontDatabase>
 #include <memory>
+#include"explosionpool.h"
 
-static int SCORES;
+static long int SCORES;
 
 Game::Game(QWidget *parent) :
   QWidget(parent),
@@ -38,10 +40,24 @@ Game::Game(QWidget *parent) :
   int id = QFontDatabase::addApplicationFont(":/images/images/emulogic.ttf");
   QString family = QFontDatabase::applicationFontFamilies(id).at(0);
   emulogic = QFont(family);
-
+  this->setFont(emulogic);
   timer = new QTimer(this);
   connect(timer, SIGNAL(timeout()), this, SLOT(update()));
+  COUNTER = 0;
 
+}
+
+Game& Game::getInstance(){
+    static Game game;
+    return game;
+}
+
+QVector<std::shared_ptr<Shot>>& Game::getShots(){
+  return shots;
+}
+
+long int& Game::getCounter(){
+  return COUNTER;
 }
 
 void Game::newGame()
@@ -52,29 +68,33 @@ void Game::newGame()
   players.push_back(player);
   this->player = player;
 
-  for(int i =1; i<9; i++){
-      std::shared_ptr<Enemy> enemy (new Enemy(Enemy::Type::Fly,QPoint(50,50) - 50*i*QPoint(1,1),15));
+
+
+
+
+  for(int i =1; i<10; i++){
+      std::shared_ptr<Enemy> enemy (EnemiesFactory::newWasp(QPoint(-150,-150)+ 33*i*QPoint(-1,-1),10));
       enemy->addRoute(Route::Path::Line,QPoint(300,400));
-      enemy->addRoute(Route::Path::Line,QPoint(600,100));
-      enemy->addRoute(Route::Path::Sin,QPoint(200,400));
-      enemy->addRoute(Route::Path::Lemniscate);
+      //enemy->addRoute(Route::Path::Line,QPoint(50,600));
+      //enemy->addRoute(Route::Path::Sin,QPoint(250,200));
+      //enemy->addRoute(Route::Path::Lemniscate);
       enemy->addRoute(Route::Path::Line,QPoint(600,400) + 33*i*QPoint(-1,-1));
       enemy->addRoute(Route::Path::Stay);
       enemies.push_back(enemy);
   }
   for(int i =1; i<9; i++){
-      std::shared_ptr<Enemy> enemy (new Enemy(Enemy::Type::Wasp,QPoint(600,800) + 70*i*QPoint(1,1),15));
+      std::shared_ptr<Enemy> enemy (EnemiesFactory::newFly(QPoint(600,800) + 50*i*QPoint(1,1),15));
       enemy->addRoute(Route::Path::Line,QPoint(150,200));
-      enemy->addRoute(Route::Path::Sin,QPoint(250,300));
-      enemy->addRoute(Route::Path::Lemniscate);
+      //enemy->addRoute(Route::Path::Sin,QPoint(250,300));
+     // enemy->addRoute(Route::Path::Lemniscate);
       enemy->addRoute(Route::Path::Line,QPoint(300,100) + 33*i*QPoint(-1,1));
       enemy->addRoute(Route::Path::Stay);
       enemies.push_back(enemy);
   }
   for(int i =1; i<12; i++){
-      std::shared_ptr<Enemy> enemy (new Enemy(Enemy::Type::Lobster,QPoint(-800,1600) - 70*i*QPoint(-1,1),15));
-      enemy->addRoute(Route::Path::Line,QPoint(600,-50));
-      enemy->addRoute(Route::Path::Lemniscate);
+      std::shared_ptr<Enemy> enemy (EnemiesFactory::newLobster(QPoint(-800,1600) - 50*i*QPoint(-1,1),17));
+     // enemy->addRoute(Route::Path::Line,QPoint(600,-50));
+     // enemy->addRoute(Route::Path::Lemniscate);
       enemy->addRoute(Route::Path::Sin,QPoint(550,400) + 42*i*QPoint(-1,0));
       enemy->addRoute(Route::Path::Stay);
       enemies.push_back(enemy);
@@ -184,13 +204,11 @@ void Game::keyReleaseEvent(QKeyEvent *event)
 }
 
 void Game::execute(){
-
+  COUNTER++;
   for(auto& star : sky){
       //remove old stars
       if(!star->isAlive()){
-          sky.removeOne(star);
-          std::shared_ptr<SkyStar> newStar (new SkyStar());
-          sky.push_back(newStar);
+          star->reborn();
         }else{
           star->move();
           drawable.append(star);
@@ -200,17 +218,23 @@ void Game::execute(){
   resolveCollisions();
 
   player->move();
+
   drawable.append(player);
 
   if(!physical.contains(player) ){
       physical.append(player);
     }
 
-  for(auto& shot : player->getShots()){
-      shot->move();
-      drawable.append(shot);
-      if(!physical.contains(shot)){
-          physical.append(shot);
+  for(auto& shot : shots){
+      if(shot->isAlive()){
+          shot->move();
+          drawable.append(shot);
+          if(!physical.contains(shot)){
+              physical.append(shot);
+            }
+        }
+      else{
+          shots.removeOne(shot);
         }
     }
 
@@ -221,13 +245,6 @@ void Game::execute(){
           drawable.append(enemy);
           if(!physical.contains(enemy)){
               physical.append(enemy);
-            }
-          for(auto& shot : enemy->getShots()){
-              shot->move();
-              drawable.append(shot);
-              if(!physical.contains(shot)){
-                  physical.append(shot);
-                }
             }
         }
       else{
@@ -245,18 +262,22 @@ void Game::execute(){
           break;
         }
     }
+
 }
 
 void Game::resolveCollisions()
 {
   for(auto& physicalObject1 : physical){
-      for (auto physicalObject2 = &physicalObject1+1; physicalObject2 != physical.end(); ++physicalObject2){
-          if(physicalObject1->collide(*physicalObject2)){
-              if(!(*physicalObject2)->isAlive()){
-                  std::shared_ptr<Explosion> newExplosion (new Explosion(physicalObject1->getPoint()));
-                  explosions.push_back(newExplosion);
-                  physical.removeOne(*physicalObject2);
-                  break;
+      for (auto physicalObject2 = &physicalObject1; physicalObject2 != physical.end(); ++physicalObject2){
+          if(physicalObject1 != *physicalObject2){
+              if(physicalObject1->collide(*physicalObject2)){
+                  makeDemage(physicalObject1,*physicalObject2);
+                  if(!(*physicalObject2)->isAlive()){
+                      std::shared_ptr<Explosion> newExplosion (ExplosionPool::getInstance().createNew(physicalObject1->getPoint()-QPoint(20,20)));
+                      explosions.push_back(newExplosion);
+                      physical.removeOne(*physicalObject2);
+                      break;
+                    }
                 }
             }
         }
@@ -267,6 +288,21 @@ void Game::resolveCollisions()
     }
 }
 
+void Game::makeDemage(std::shared_ptr<PhysicalObject> object1, std::shared_ptr<PhysicalObject> object2){
+  if(object1->getType() == GameObject::Type::PlayerShot || object2->getType() == GameObject::Type::PlayerShot ){
+      if(object1->getType() == GameObject::Type::Enemy || object2->getType() == GameObject::Type::Enemy ){
+          object1->hurt();
+          object2->hurt();
+          SCORES++;
+        }
+    }
+  if(object1->getType() == GameObject::Type::EnemyShot || object2->getType() == GameObject::Type::EnemyShot ){
+      if(object1->getType() == GameObject::Type::Player || object2->getType() == GameObject::Type::Player ){
+          object1->hurt();
+          object2->hurt();
+        }
+    }
+}
 
 void Game::paintEvent(QPaintEvent *)
 {
@@ -281,10 +317,17 @@ void Game::paintEvent(QPaintEvent *)
       drawedObject->draw(painter);
     }
 
-  painter->setPen(QColor(Qt::red));
+  painter->setPen(QColor(Qt::gray));
   painter->setBrush(QBrush(Qt::BrushStyle::SolidPattern));
-  painter->setFont(emulogic);
-  painter->drawText(QRect(280,30,200,40),QString::number(SCORES));
+  painter->drawText(QRect(25,25,200,40),QString::number(SCORES));
+  painter->drawText(QRect(255,25,200,40),QString("20000"));
+  painter->setPen(QColor(Qt::red));
+  painter->drawText(QRect(220,5,200,40),QString("HIGH SCORE"));
+  for(int i = 0; i < player->getLives(); i++){
+      painter->drawPixmap(QRect(10+32*i,765,24,24),player->getPixmap());
+    }
+
+  //painter->drawText(QRect(30,750,200,40),QString::number(player->getLives()));
 }
 
 

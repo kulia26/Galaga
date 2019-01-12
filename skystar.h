@@ -9,11 +9,13 @@ class SkyStar : public GameObject
 {
 public:
   SkyStar();
+  void reborn();
   void move() final override;
   void draw(std::shared_ptr<QPainter> painter) final override;
   QColor getColor();
 private:
   QColor color;
+  int size;
 };
 
 #endif // SKYSTAR_H

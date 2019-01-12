@@ -34,11 +34,11 @@ SOURCES += \
     enemy.cpp \
     explosion.cpp \
     route.cpp \
-    animated.cpp \
     shooter.cpp \
-    drawed.cpp \
     physicalobject.cpp \
-    routed.cpp
+    enemiesfactory.cpp \
+    shotpool.cpp \
+    explosionpool.cpp
 
 HEADERS += \
         game.h \
@@ -53,7 +53,11 @@ HEADERS += \
     shooter.h \
     drawed.h \
     physicalobject.h \
-    routed.h
+    routed.h \
+    moved.h \
+    enemiesfactory.h \
+    shotpool.h \
+    explosionpool.h
 
 FORMS += \
         game.ui
@@ -65,3 +69,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 RESOURCES += \
     game.qrc
+
+DISTFILES +=

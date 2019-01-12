@@ -13,6 +13,8 @@ public:
   void animate(Animation type) final override;
   void makeFramesFromPixmap() override;
   void draw(std::shared_ptr<QPainter> painter) override;
+  void move() override;
+  void reuse(QPoint point);
 };
 
 #endif // EXPLOSION_H

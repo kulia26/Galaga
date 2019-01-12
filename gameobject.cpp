@@ -4,12 +4,8 @@
 #include <iostream>
 
 
-void GameObject::move(){
-
-}
-
-void GameObject:: hurt(){
-  lives--;
+void GameObject::hurt(){
+  --lives;
 }
 
 bool GameObject::isAlive(){
@@ -77,16 +73,17 @@ void GameObject::setPixmap(QString path)
 
 void GameObject::addRoute(Route::Path path, QPoint end)
 {
-  auto route = new Route(this, path, end);
+  Route* route = new Route(this, path, end);
   routes.push_back(route);
   if(routes.first()==route){
       currentRoute = routes.first();
+      currentRoute->setStart();
     }
 }
 
 void GameObject::addRoute(Route::Path path)
 {
-  auto route = new Route(this, path);
+  Route* route = new Route(this, path);
   routes.push_back(route);
   if(routes.first()==route){
       currentRoute = routes.first();

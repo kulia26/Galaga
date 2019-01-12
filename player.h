@@ -21,6 +21,8 @@ public:
   void makeFireGun(bool);
   bool isFireGun();
   void setCurrentRoute(Route::Path route);
+  int getLives();
+  QPixmap getPixmap();
   void read(const QJsonObject &json) final override;
   void write(QJsonObject &json) const final override;
 private:

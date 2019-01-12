@@ -6,18 +6,19 @@
 #include <iostream>
 #include <QJsonArray>
 #include <QJsonObject>
+#include "shotpool.h"
 
 Player::Player()
 {
 gameObjectType = GameObject::Type::Player;
-setPixmap(":/images/images/sprites.png");
-pixmap = pixmap.copy(QRect(172,35,9,10));
+setPixmap(":/images/images/PlayerSprite.png");
 rect  = QRect(268,700,48,48);
 addRoute(Route::Path::None);
 addRoute(Route::Path::Left);
 addRoute(Route::Path::Right);
 setCurrentRoute(Route::Path::None);
 speed = 10;
+lives = 5;
 fireGun = false;
 }
 
@@ -27,18 +28,23 @@ Player::~Player()
 std::cout<<"destroy player"<< std::endl;
 }
 
+int Player::getLives(){
+  return lives;
+}
+
+QPixmap Player::getPixmap(){
+  return pixmap;
+}
+
 void Player::setCurrentRoute(Route::Path route){
   if(route == Route::Path::None){
       currentRoute = routes[0];
-      currentRoute->setStart();
     }
   if(route == Route::Path::Left){
       currentRoute = routes[1];
-      currentRoute->setStart();
     }
   if(route == Route::Path::Right){
       currentRoute = routes[2];
-      currentRoute->setStart();
     }
 }
 
@@ -57,8 +63,7 @@ void Player::move()
 
 void Player::fire()
 {
-  std::shared_ptr<Shot> newShot(new class Shot(QRect(rect.x()+21,rect.y(),6,12), Route::Path::Top));
-  this->addShot(newShot);
+  this->addShot(ShotPool::getInstance().createNew(this->getPoint()+QPoint(24,24),GameObject::Type::PlayerShot));
 }
 
 void Player::makeFireGun(bool firegun)

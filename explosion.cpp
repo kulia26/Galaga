@@ -3,7 +3,6 @@
 
 Explosion::Explosion(QPoint point)
 {
-
   pixmap = QPixmap(":/images/images/ExplosionSprites.png");
   makeFramesFromPixmap();
   rect  = QRect(point.x()-24,point.y()-24,frame->width()*3,frame->height()*3);
@@ -14,7 +13,6 @@ void Explosion::animate(Animation){
 hurt();
 int index = frames.indexOf(frame);
 frame = frames[index + 1];
-
 }
 
 void Explosion::makeFramesFromPixmap(){
@@ -31,4 +29,17 @@ void Explosion::makeFramesFromPixmap(){
 void Explosion::draw(std::shared_ptr<QPainter> painter)
 {
   painter->drawPixmap(rect,*frame);
+}
+
+void Explosion::move()
+{
+
+}
+
+void Explosion::reuse(QPoint point)
+{
+  rect.moveTo(point);
+  pixmap = QPixmap(":/images/images/sprites.png").copy(QRect(222,213,3,6));
+  lives = 4;
+  frame = frames.first();
 }

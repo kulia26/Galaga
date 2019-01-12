@@ -1,13 +1,13 @@
 ﻿#include "shot.h"
 #include "gameobject.h"
 #include<iostream>
-
-Shot::Shot(QRect rect, Route::Path path)
+#include"shotpool.h"
+Shot::Shot(QRect rect, GameObject::Type type)
 {
+  this->gameObjectType = type;
   this->rect = rect;
-  this->gameObjectType = GameObject::Type::Shot;
   pixmap = QPixmap(":/images/images/sprites.png").copy(QRect(222,213,3,6));
-  if(path == Route::Path::Bottom){
+  if(type == GameObject::Type::EnemyShot){
       pixmap = pixmap.transformed(QTransform().rotate(180));
       speed = 20;
     }else{
@@ -21,5 +21,18 @@ void Shot::move()
   if (rect.y() < -50 || rect.y() > 850){
       this->hurt();
     }
+}
+
+void Shot::reuse(QPoint point)
+{
+  this->rect = QRect(point,QSize(6,12));
+  pixmap = QPixmap(":/images/images/sprites.png").copy(QRect(222,213,3,6));
+  if(this->gameObjectType == GameObject::Type::EnemyShot){
+      pixmap = pixmap.transformed(QTransform().rotate(180));
+      speed = 20;
+    }else{
+      speed = -20;
+    }
+  lives = 1;
 }
 

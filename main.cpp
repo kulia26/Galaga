@@ -4,10 +4,10 @@
 int main(int argc, char *argv[])
 {
   QApplication a(argc, argv);
-  Game w; 
+  Game& game = Game::getInstance();
   //w.loadGame();
-  w.newGame();
-  w.show();
+  game.newGame();
+  game.show();
   //w.saveGame();
  // w.show();
 

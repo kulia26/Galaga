@@ -6,15 +6,14 @@
 class Shooter
 {
 public:
-  Shooter();
-  virtual ~Shooter();
-  virtual void fire();
+  Shooter() = default;
+  virtual ~Shooter() = default;
+  virtual void fire() = 0;
 
   void removeShot(std::shared_ptr<Shot> shot);
   void addShot(std::shared_ptr<Shot> shot);
   QVector<std::shared_ptr<Shot>> getShots();
-private:
-  QVector<std::shared_ptr<Shot>> shots;
+  std::shared_ptr<Shot> last;
 };
 
 #endif // SHOOTER_H

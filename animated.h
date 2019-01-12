@@ -5,7 +5,7 @@
 class Animated
 {
 public:
-  enum class Animation {MoveDownRight,Stay};
+  enum class Animation {MoveDownRight,Stay,Rotate,Attack};
   Animated() = default;
   virtual ~Animated() = default;
   virtual void makeFramesFromPixmap() = 0;

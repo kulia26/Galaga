@@ -6,24 +6,25 @@
 
 Route::Route(class GameObject* object, Path path, QPoint end)
 {
-  this->parent = object;
+  parent = object;
   this->path =path;
   this->start = parent->getPoint();
   this->end = end;
-  this->position = parent->getPoint();
+  this->position = start;
   theEnd = false;
   q=M_PI/2;
 }
 
 Route::Route(class GameObject* object, Path path)
 {
-  this->parent = object;
+  parent = object;
   this->path =path;
   this->start = parent->getPoint();
-  this->end = QPoint(-100,-100);
-  this->position = parent->getPoint();
+  this->end = QPoint(-1000,-1000);
+  this->position = start;
   this->path =path;
   theEnd = false;
+  q=M_PI/2;
 }
 
 Route::Path Route::getRoutePath(){
@@ -34,13 +35,27 @@ void Route::setStart(){
   start = parent->getPoint();
   position = start;
   theEnd = false;
+
+
+  if(path == Path::Stay){
+      end = position;
+    }
+  //std::cout << "the end point is: x - "<<end.x()<<" y - "<<end.y()<<std::endl;
 }
 
-
 QPoint Route::getNextPoint(double speed){
-  if(QRect(end - QPoint(10,10),end+QPoint(10,10)).contains(position)){
-      theEnd = true;
+  if(theEnd){
       return end;
+    }
+  if(path != Path::Stay && QRect(end - QPoint(8,8),end+QPoint(8,8)).intersects(QRect(position - QPoint(8,8),position+QPoint(8,8)))){
+      theEnd = true;
+      position = end;
+      return end;
+    }else{
+      if(path != Path::Lemniscate && path != Path::Stay){
+          setStart();
+        }
+
     }
   if(path == Path::Left){
       dx = -speed;
@@ -64,33 +79,28 @@ QPoint Route::getNextPoint(double speed){
     }
   if(path== Path::Line){
     double length = sqrt((end.x() - start.x())*(end.x() - start.x())+(end.y() - start.y())*(end.y() - start.y()));
-    if(length > 5){
-        setStart();
-      }
+
     dx = speed*(end.x() - start.x())/length;
     dy = speed*(end.y() - start.y())/length;
     }
   if(path== Path::Stay){
-      if(parent->getPoint().x() - start.x() > -6){
-          dx =dx - 1;
+      if(std::abs(end.x()-position.x()) > 8){
+          dx =dx + 1;
         }else{
-          dx = dx+1;
+          dx = dx-1;
         }
     }
   if(path == Path::Sin){
       q = q + 0.4;
       double t = q;
       double length = sqrt((end.x() - start.x())*(end.x() - start.x())+(end.y() - start.y())*(end.y() - start.y()));
-      if(length > 5){
-          setStart();
-        }
       dx = speed*(end.x() - start.x())/length+ 4*cos(t);
       dy = speed*(end.y() - start.y())/length + 4*sin(t)*sin(t);
     }
   if(path == Path::Lemniscate){
-      q = q + 0.05;
+      q = q + 0.04;
       double t = q;
-      dx =  speed/2*sqrt(2)*cos(t);
+      dx =  speed/4*sqrt(2)*cos(t);
       dy =  speed*sqrt(2)*cos(t)*sin(t);
       if(q > M_PI/2 and  q < M_PI){
           dy = -dy;
@@ -100,12 +110,13 @@ QPoint Route::getNextPoint(double speed){
         }
       if(q > 3*M_PI/2 and q < 2*M_PI){
         }
-      if(q > 2*M_PI){
+      if(q > 2.5*M_PI){
           theEnd = true;
-          return position;
+          end = position;
         }
     }
   position = QPoint(position.x()+qRound(dx),position.y()+qRound(dy));
+  //std::cout << "the position point is: x - "<<position.x()<<" y - "<<position.y()<<std::endl;
   return position;
 }
 

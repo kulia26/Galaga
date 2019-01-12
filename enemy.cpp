@@ -1,5 +1,6 @@
 ﻿#include "enemy.h"
 #include "gameobject.h"
+#include "shotpool.h"
 
 #include <cmath>
 #include <iostream>
@@ -25,7 +26,8 @@ Enemy::Enemy(Enemy::Type type, QPoint start,double speed)
   }
   makeFramesFromPixmap();
   rect  = QRect(start.x(),start.y(),frame->width()*3,frame->height()*3);
-  canAttack = true;
+  canAttack = false;
+
 }
 
 Enemy::~Enemy()
@@ -51,13 +53,13 @@ void Enemy::move()
   if(currentRoute->getRoutePath() == Route::Path::Line){
       animate(Animation::MoveDownRight);
     }
+  if(currentRoute->getRoutePath() == Route::Path::Lemniscate){
+      animate(Animation::Rotate);
+    }
   if(currentRoute->getRoutePath()==Route::Path::Stay){
       animate(Animation::Stay);
       if(currentRoute != routes.last()){
          currentRoute->setTheEnd(true);
-        }
-      if(currentRoute == routes.last()){
-         currentRoute->setTheEnd(false);
         }
     }
   if(currentRoute->isEnded()){
@@ -66,6 +68,9 @@ void Enemy::move()
           currentRoute = routes[i+1];
           currentRoute->setStart();
         }
+      if(currentRoute == routes.last()){
+          //canAttack = true;
+        }
     }
   this->fire();
 }
@@ -73,13 +78,12 @@ void Enemy::move()
 void Enemy::fire()
 {
   if(framesCount%QRandomGenerator::global()->bounded(60,120) == 0 && currentRoute->getRoutePath() == Route::Path::Stay){
-          std::shared_ptr<Shot> newShot(new class Shot(QRect(rect.x()+10,rect.y()+15,6,12), Route::Path::Bottom));
-          this->addShot(newShot);
+          this->addShot(ShotPool::getInstance().createNew(this->getPoint()+QPoint(10,10),GameObject::Type::EnemyShot));
     }
 }
 
 void Enemy::attack(std::shared_ptr<GameObject> player){
-  if(framesCount == QRandomGenerator::global()->bounded(150, 250) && canAttack){
+  if(canAttack){
       std::cout << "attack" << std::endl;
       addRoute(Route::Path::Sin, player->getPoint());
       addRoute(Route::Path::Sin, this->getPoint());
@@ -103,6 +107,22 @@ void Enemy::animate(Animation type){
         }
         else{
          frame = frames[5];
+        }
+  }
+  if(framesCount % 4 == 0 && type == Animation::Rotate){
+        if(frames.indexOf(frame)==4){
+          frame = frames[3];
+        }
+        else{
+         frame = frames[4];
+        }
+  }
+  if(framesCount % 4 == 0 && type == Animation::Attack){
+        if(frames.indexOf(frame)==1){
+          frame = frames[2];
+        }
+        else{
+         frame = frames[1];
         }
   }
   framesCount++;

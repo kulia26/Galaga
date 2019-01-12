@@ -11,16 +11,16 @@
 #include "drawed.h"
 #include "animated.h"
 #include "routed.h"
+#include "moved.h"
 
-class GameObject: public Drawed, protected Routed
+class GameObject: public Drawed, protected Routed, public Moved
 {
 public:
-  enum class Type{Player, Enemy, Explosion, Shot};
+  enum class Type{Player, Enemy, Explosion, EnemyShot, PlayerShot};
 
   GameObject() = default;
   virtual ~GameObject() = default;
 
-  virtual void move();
   void draw(std::shared_ptr<QPainter> painter);
   void addRoute(Route::Path path, QPoint end);
   void addRoute(Route::Path path);

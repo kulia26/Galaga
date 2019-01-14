@@ -18,7 +18,7 @@ addRoute(Route::Path::Left);
 addRoute(Route::Path::Right);
 setCurrentRoute(Route::Path::None);
 speed = 10;
-lives = 5;
+lives = 1;
 fireGun = false;
 }
 

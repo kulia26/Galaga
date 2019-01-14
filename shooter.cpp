@@ -25,13 +25,4 @@ void Shooter::addShot(std::shared_ptr<Shot> shot){
     }
 }
 
-QVector<std::shared_ptr<Shot>> Shooter::getShots()
-{
-  for (auto& shot : Game::getInstance().getShots()){
-      if (!shot->isAlive()){
-          removeShot(shot);
-          break;
-      }
-  }
-  return Game::getInstance().getShots();
-}
+

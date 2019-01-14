@@ -7,5 +7,8 @@
         <file>images/ExplosionSprites.png</file>
         <file>images/emulogic.ttf</file>
         <file>images/PlayerSprite.png</file>
+        <file>images/PlayerShotSprite.png</file>
+        <file>images/EnemyShotSprite.png</file>
+        <file>images/ExplosionSprites2.png</file>
     </qresource>
 </RCC>

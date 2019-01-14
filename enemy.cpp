@@ -27,6 +27,7 @@ Enemy::Enemy(Enemy::Type type, QPoint start,double speed)
   makeFramesFromPixmap();
   rect  = QRect(start.x(),start.y(),frame->width()*3,frame->height()*3);
   canAttack = false;
+  lives = 1;
 
 }
 

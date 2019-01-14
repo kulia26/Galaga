@@ -12,7 +12,7 @@ public:
 
   void removeShot(std::shared_ptr<Shot> shot);
   void addShot(std::shared_ptr<Shot> shot);
-  QVector<std::shared_ptr<Shot>> getShots();
+  //QVector<std::shared_ptr<Shot>> getShots();
   std::shared_ptr<Shot> last;
 };
 

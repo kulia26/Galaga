@@ -36,11 +36,9 @@ void Route::setStart(){
   position = start;
   theEnd = false;
 
-
   if(path == Path::Stay){
       end = position;
     }
-  //std::cout << "the end point is: x - "<<end.x()<<" y - "<<end.y()<<std::endl;
 }
 
 QPoint Route::getNextPoint(double speed){
@@ -84,10 +82,10 @@ QPoint Route::getNextPoint(double speed){
     dy = speed*(end.y() - start.y())/length;
     }
   if(path== Path::Stay){
-      if(std::abs(end.x()-position.x()) > 8){
-          dx =dx + 1;
+      if(std::abs(end.x()-position.x()) > 5){
+          dx = dx + 1;
         }else{
-          dx = dx-1;
+          dx = dx - 1;
         }
     }
   if(path == Path::Sin){
@@ -115,8 +113,25 @@ QPoint Route::getNextPoint(double speed){
           end = position;
         }
     }
+  if(path == Path::HalfCircleRightLeft){
+      q = q + 0.04;
+      double t = q;
+      dx =  speed/4*sqrt(2)*cos(t);
+      dy =  speed*sqrt(2)*cos(t)*sin(t);
+      if(q > M_PI/2 and  q < M_PI){
+          dy = -dy;
+        }
+      if(q > M_PI and q < 3*M_PI/2){
+          dy = -dy;
+
+        }
+      if(q > 3*M_PI/2 and q < 2*M_PI){
+          theEnd = true;
+          end = position;
+        }
+    }
   position = QPoint(position.x()+qRound(dx),position.y()+qRound(dy));
-  //std::cout << "the position point is: x - "<<position.x()<<" y - "<<position.y()<<std::endl;
+
   return position;
 }
 

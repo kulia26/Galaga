@@ -9,7 +9,7 @@ void GameObject::hurt(){
 }
 
 bool GameObject::isAlive(){
-  return lives > 0;
+  return lives  > 0;
 }
 GameObject::Type GameObject::getType(){
   return gameObjectType;

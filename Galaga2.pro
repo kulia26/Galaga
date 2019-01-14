@@ -38,7 +38,8 @@ SOURCES += \
     physicalobject.cpp \
     enemiesfactory.cpp \
     shotpool.cpp \
-    explosionpool.cpp
+    explosionpool.cpp \
+    wave.cpp
 
 HEADERS += \
         game.h \
@@ -57,7 +58,8 @@ HEADERS += \
     moved.h \
     enemiesfactory.h \
     shotpool.h \
-    explosionpool.h
+    explosionpool.h \
+    wave.h
 
 FORMS += \
         game.ui

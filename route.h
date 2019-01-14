@@ -7,7 +7,7 @@
 class Route
 {
 public:
-  enum class Path {Line, Stay, Left, Right, Bottom, None, Lemniscate, Sin, Top};
+  enum class Path {Line, Stay, Left, Right, Bottom, None, Lemniscate, Sin, Top, HalfCircleRightLeft};
 
   explicit Route(class GameObject* object, Route::Path path, QPoint end);
   explicit Route(class GameObject* object,Route::Path path);

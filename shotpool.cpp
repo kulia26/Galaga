@@ -8,10 +8,8 @@ ShotPool& ShotPool::getInstance(){
 
 std::shared_ptr<Shot> ShotPool::createNew(QPoint point, GameObject::Type type)
 {
-  std::cout << pool.size() << std::endl;
   if(!pool.isEmpty()){
       for(auto pooledShot : pool){
-          //std::cout << pooledShot.instance.use_count() << std::endl;
           if(pooledShot.instance.use_count()<=2){
             pooledShot.isUsing = false;
             }

@@ -19,15 +19,19 @@ class Game : public QWidget
   Q_OBJECT
 
 public:
-  enum class State{Play, PlayerHurt, GameOver, GetReady};
+  enum class State{Menu, Play, PlayerHurt, GameOver, GetReady, YouWin};
+  enum class Menu{NewGame,Exit};
   void changeState(State state);
   static Game& getInstance();
   QVector<std::shared_ptr<Shot>>& getShots();
   long int& getCounter();
+  void execute();
   void executePlay();
   void executePlayerHurt();
   void executeGetReady();
+  void executeYouWin();
   void executeGameOver();
+  void executeMenu();
   void resolveCollisions();
   void nextWave();
   void makeDemage(std::shared_ptr<PhysicalObject> object1, std::shared_ptr<PhysicalObject> object2);
@@ -35,6 +39,7 @@ public:
   void paintEvent(QPaintEvent *event);
   void keyPressEvent(QKeyEvent *event);
   void keyReleaseEvent(QKeyEvent *event);
+  void closeEvent(QCloseEvent *event);
 
 
   bool loadGame();
@@ -63,7 +68,8 @@ private:
 
   QVector<std::shared_ptr<Drawed>> drawable;
   QVector<std::shared_ptr<PhysicalObject>> physical;
-  State state;
+  State state = State::Menu;
+  Menu menuItem;
 };
 
 #endif // GAME_H

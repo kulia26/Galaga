@@ -63,6 +63,11 @@ QPoint GameObject::getPoint()
   return rect.topLeft();
 }
 
+void GameObject::moveRectTo(QPoint point)
+{
+  rect.moveTo(point);
+}
+
 
 void GameObject::setPixmap(QString path)
 {

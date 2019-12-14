@@ -30,6 +30,7 @@ public:
   Type getType();
   void  hurt();
   bool isAlive();
+  void moveRectTo(QPoint point);
 
   virtual void read(const QJsonObject &json);
   virtual void write(QJsonObject &json) const;

@@ -16,12 +16,15 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QRandomGenerator>
+#include <QTextStream>
 #include <QFontDatabase>
 #include <memory>
 #include"explosionpool.h"
 #include"wave.h"
+#include <fstream>
 
 static long int SCORES;
+static long int HIGHSCORE;
 
 Game::Game(QWidget *parent) :
   QWidget(parent),
@@ -47,6 +50,21 @@ Game::Game(QWidget *parent) :
   COUNTER = 0;
   GETREADY = 4;
 
+  QFile highscore(":/data/data/highscore.txt");
+  highscore.open(QIODevice::ReadOnly | QIODevice::Text);
+  QTextStream ts(&highscore);
+  HIGHSCORE  = ts.readLine().toLong();
+  highscore.close();
+
+  timer->start(35);
+
+}
+void Game::closeEvent(QCloseEvent *event){
+  std::ofstream myfile;
+  myfile.open ("/home/kulia26/cpp/Galaga2/data/highscore.txt");
+  myfile << HIGHSCORE;
+  myfile.close();
+  event->accept();
 }
 
 Game& Game::getInstance(){
@@ -65,7 +83,13 @@ long int& Game::getCounter(){
 void Game::newGame()
 {
   SCORES =  0;
-for (int i = 0; i<5; i++){
+  state  = State::Play;
+  players.clear();
+  enemies.clear();
+  explosions.clear();
+  shots.clear();
+  waves.clear();
+  for (int i = 0; i<5; i++){
     std::shared_ptr<Player> player (new Player());
     players.push_back(player);
   }
@@ -73,13 +97,13 @@ for (int i = 0; i<5; i++){
   this->player = players.first();
 
   std::shared_ptr<Wave> wave1 (new Wave(Wave::Type::Easy));
-  //waves.push_back(wave1);
+  waves.push_back(wave1);
 
   std::shared_ptr<Wave> wave2 (new Wave(Wave::Type::Middle));
-  //waves.push_back(wave2);
+  waves.push_back(wave2);
 
   std::shared_ptr<Wave> wave3 (new Wave(Wave::Type::Hard));
-  //waves.push_back(wave3);
+  waves.push_back(wave3);
 
   std::shared_ptr<Wave> wave4 (new Wave(Wave::Type::SuperHard));
   waves.push_back(wave4);
@@ -89,7 +113,7 @@ for (int i = 0; i<5; i++){
   shots.clear();
   drawable.clear();
   physical.clear();
-  timer->start(35);
+
 
 }
 
@@ -166,30 +190,56 @@ bool Game::saveGame() const
 // каждый обьект имеет скорость и направление, нажатие кнопок лишь меняет направление
 void Game::keyPressEvent(QKeyEvent *event)
 {
-  // просто задаем нужное направление
-  if (event->key() == Qt::Key_Left) {
-    player->setCurrentRoute(Route::Path::Left);
+  if ((event->key() == Qt::Key_Down || event->key() == Qt::Key_Up) && state==State::Menu) {
+      if(menuItem == Menu::Exit){
+          menuItem = Menu::NewGame;
+        }else{
+          menuItem = Menu::Exit;
+        }
   }
-  if ( event->key() == Qt::Key_Right ) {
-    player->setCurrentRoute(Route::Path::Right);
+  if (event->key() == Qt::Key_Space && state==State::Menu){
+      std::cout<<"Enter is press"<<std::endl;
+      if(menuItem == Menu::Exit){
+          event->accept();
+          this->close();
+
+        }else{
+          this->newGame();
+        }
   }
-  if ( event->key() == Qt::Key_Space ) {
-    player->fire();
-    if(event->isAutoRepeat()){
-        player->makeFireGun(true);
+  if (event->key() == Qt::Key_Space && (state==State::YouWin || state ==State::GameOver)){
+      changeState(State::Menu);
+      drawable.clear();
+  }
+  if(state == State::Play){
+      if (event->key() == Qt::Key_Left) {
+        player->setCurrentRoute(Route::Path::Left);
+      }
+      if ( event->key() == Qt::Key_Right ) {
+        player->setCurrentRoute(Route::Path::Right);
+      }
+      if ( event->key() == Qt::Key_Space ) {
+        player->fire();
+        if(event->isAutoRepeat()){
+            player->makeFireGun(true);
+        }
+      }
     }
-  }
+
 }
 
 void Game::keyReleaseEvent(QKeyEvent *event)
 {
   //меняем направление в нон
-  if (event->key() == Qt::Key_Left || event->key() == Qt::Key_Right) {
-    player->setCurrentRoute(Route::Path::None);
-  }
-  if ( event->key() == Qt::Key_Space ) {
-    player->makeFireGun(false);
-  }
+  if(state == State::Play){
+      if (event->key() == Qt::Key_Left || event->key() == Qt::Key_Right) {
+        player->setCurrentRoute(Route::Path::None);
+      }
+      if ( event->key() == Qt::Key_Space ) {
+        player->makeFireGun(false);
+      }
+    }
+
 }
 void Game::changeState(State state){
   if(state == State::GameOver){
@@ -198,6 +248,7 @@ void Game::changeState(State state){
   this->state = state;
 }
 void Game::executePlay(){
+
   for(auto& star : sky){
       //remove old stars
       if(!star->isAlive()){
@@ -274,6 +325,9 @@ void Game::executePlay(){
     }else{
       this->changeState(State::PlayerHurt);
     }
+  if(enemies.isEmpty()){
+      changeState(State::YouWin);
+    }
 }
 
 void Game::executePlayerHurt(){
@@ -297,9 +351,12 @@ void Game::executePlayerHurt(){
         }
     }
   if(explosions.isEmpty()){
+
+      QPoint pos = players.first()->getPoint();
       players.removeFirst();
       if(!players.isEmpty()){
           player = players.first();
+          player->moveRectTo(pos);
           drawable.append(player);
           changeState(State::GetReady);
         }else{
@@ -364,11 +421,79 @@ void Game::executeGameOver(){
         }
     }
 }
+void Game::executeYouWin(){
+  for(auto& shot : shots){
+          drawable.removeOne(shot);
+          shots.removeOne(shot);
+        }
+
+  if(explosions.length()< 14){
+      explosions.push_back(ExplosionPool::getInstance().createNew(QPoint(QRandomGenerator::global()->bounded(0,600),QRandomGenerator::global()->bounded(0,800)),Explosion::Type::EnemyDie));
+    }
+  for(auto explosion : explosions){
+      if(explosion->isAlive()){
+          if(!drawable.contains(explosion)){
+              drawable.append(explosion);
+            }
+          explosion->animate(Animated::Animation::Stay);
+        }
+      else{
+          drawable.removeOne(explosion);
+          explosions.removeOne(explosion);
+          break;
+        }
+    }
+}
+
+void Game::executeMenu(){
+  for(auto& star : sky){
+    //remove old stars
+    if(!star->isAlive()){
+        star->reborn();
+      }else{
+        star->move();
+        if(!drawable.contains(star)){
+            drawable.append(star);
+          }
+      }
+  }
+}
+
+void Game::execute(){
+  COUNTER++;
+  if(SCORES > HIGHSCORE){
+      HIGHSCORE = SCORES;
+    }
+  if(state == State::Play){
+      this->executePlay();
+    }
+  if(state==State::PlayerHurt){
+      this->executePlayerHurt();
+    }
+  if(state==State::GetReady){
+      this->executeGetReady();
+    }
+  if(state==State::GameOver){
+      this->executeGameOver();
+    }
+  if(state==State::YouWin){
+      this->executeYouWin();
+    }
+  if(state == State::Menu){
+      this->executeMenu();
+    }
+
+
+}
 void Game::nextWave(){
   if(waves.length()>1){
       waves.removeFirst();
       std::cout<<"Next wave ! "<< waves.first()->getEnemies().length() << " enemies is comming"<<std::endl;
       enemies.append(waves.first()->getEnemies());
+      return;
+    }
+  if(enemies.isEmpty()){
+        changeState(State::YouWin);
     }
 }
 
@@ -385,13 +510,13 @@ void Game::resolveCollisions()
                       explosions.push_back(newExplosion);
                     }
                   physical.removeOne(physicalObject2);
-                  break;
+                  //break;
                 }
             }
         }
       if(!physicalObject1->isAlive()){
           physical.removeOne(physicalObject1);
-          break;
+          //break;
         }
     }
 }
@@ -430,21 +555,7 @@ std::shared_ptr<Explosion> Game::makeExplosion(std::shared_ptr<PhysicalObject> o
 
 void Game::paintEvent(QPaintEvent *)
 {
-  COUNTER++;
-  if(state == State::Play){
-      this->executePlay();
-    }
-  if(state==State::PlayerHurt){
-      this->executePlayerHurt();
-    }
-  if(state==State::GetReady){
-      this->executeGetReady();
-    }
-  if(state==State::GameOver){
-      this->executeGameOver();
-    }
-
-
+  execute();
   std::shared_ptr<QPainter> painter (new QPainter(this));
   painter->setCompositionMode(QPainter::CompositionMode::CompositionMode_DestinationOver);
   painter->setPen(Qt::PenStyle::NoPen);
@@ -456,10 +567,10 @@ void Game::paintEvent(QPaintEvent *)
   painter->setPen(QColor(Qt::gray).lighter());
   painter->setBrush(QBrush(Qt::BrushStyle::SolidPattern));
   painter->drawText(QRect(25,25,200,40),QString::number(SCORES));
-  painter->drawText(QRect(255,25,200,40),QString("20000"));
+  painter->drawText(QRect(255,25,200,40),QString::number(HIGHSCORE));
   painter->setPen(QColor(Qt::red));
   painter->drawText(QRect(220,5,200,40),QString("HIGH SCORE"));
-  if(GETREADY > 0 && GETREADY != 4){
+  if(state==State::GetReady){
       QFont big = emulogic;
       big.setPixelSize(72);
       painter->setFont(big);
@@ -485,9 +596,50 @@ void Game::paintEvent(QPaintEvent *)
       painter->drawText(QPoint(140,400),QString("Your score is: "));
       painter->drawText(QPoint(140,440),QString::number(SCORES));
     }
-  for(int i = 0; i < players.length(); i++){
-      painter->drawPixmap(QRect(10+32*i,765,24,24),player->getPixmap());
+  if(state==State::YouWin){
+      QFont big = emulogic;
+      big.setPixelSize(24);
+      painter->setFont(big);
+      painter->setCompositionMode(QPainter::CompositionMode::CompositionMode_Darken);
+      painter->setPen(Qt::PenStyle::NoPen);
+      painter->setBrush(QBrush(QColor(0,0,0,180)));
+      painter->drawRect(0,0,600,800);
+      painter->setPen(QColor(Qt::red));
+      painter->setCompositionMode(QPainter::CompositionMode::CompositionMode_Lighten);
+      painter->drawText(QPoint(140,350),QString("You Win !"));
+      painter->drawText(QPoint(140,400),QString("Your score is: "));
+      painter->drawText(QPoint(140,440),QString::number(SCORES));
     }
+
+  if(state==State::Menu){
+      painter->setCompositionMode(QPainter::CompositionMode::CompositionMode_SourceOver);
+      painter->drawPixmap(QPoint(100,170), QPixmap(":/images/images/logo.png").scaledToWidth(400));
+      painter->drawText(QPoint(200,450), QString("New game"));
+      painter->drawText(QPoint(200,500), QString("Exit"));
+      painter->setBrush(QBrush(Qt::red));
+
+      QPointF pos;
+      if(menuItem == Menu::NewGame){
+          pos = QPoint(175,423);
+        }
+      if(menuItem == Menu::Exit){
+          pos = QPoint(175,474);
+        }
+      QPointF points[3] = {
+          QPointF(15.0, 25.0)+pos,
+          QPointF(15.0, 15.0)+pos,
+          QPointF(20.0, 20.0)+pos
+      };
+      painter->drawPolygon(points, 3);
+
+
+    }
+  if(state != State::Menu){
+      for(int i = 0; i < players.length(); i++){
+          painter->drawPixmap(QRect(10+32*i,765,24,24),player->getPixmap());
+        }
+    }
+
 }
 
 
